@@ -77,12 +77,12 @@ BtnPTZRight  = Button(TLP, 53, repeatTime = 0.1)
 ##
 BtnPTZPwr    = Button(TLP, 54)
 ## Webex
-Btn3HDMI     = Button(TLP, 31)
-Btn3VGA      = Button(TLP, 32)
-Btn3PTZ      = Button(TLP, 33)
-Btn3Share    = Button(TLP, 34)
-Btn3PwrOn    = Button(TLP, 35)
-Btn3PwrOff   = Button(TLP, 36)
+BtnWHDMI     = Button(TLP, 61)
+BtnWVGA      = Button(TLP, 62)
+BtnWPTZ      = Button(TLP, 63)
+BtnWShare    = Button(TLP, 64)
+BtnWCisco1   = Button(TLP, 65)
+BtnWCisco2   = Button(TLP, 66)
 ## REC
 Btn4HDMI     = Button(TLP, 71)
 Btn4VGA      = Button(TLP, 72)
@@ -147,25 +147,6 @@ BtnVCCamara  = Button(TLP, 153)
 BtnVCAutoAn  = Button(TLP, 154)
 BtnVCDelete  = Button(TLP, 155, repeatTime = 0.1)
 LblVCDial    = Label(TLP, 156)
-## VC - Camera
-BtnVCP1      = Button(TLP, 161)
-BtnVCP2      = Button(TLP, 162)
-BtnVCP3      = Button(TLP, 163)
-BtnVCP4      = Button(TLP, 164)
-BtnVCP5      = Button(TLP, 165)
-BtnVCP6      = Button(TLP, 166)
-##
-BtnVCZoom1   = Button(TLP, 167)
-BtnVCZoom2   = Button(TLP, 168)
-##
-BtnVCUp      = Button(TLP, 169)
-BtnVCLeft    = Button(TLP, 170)
-BtnVCDown    = Button(TLP, 171)
-BtnVCRight   = Button(TLP, 172)
-BtnVCBack    = Button(TLP, 173)
-##
-BtnVCLocal   = Button(TLP, 174)
-BtnVCRemota  = Button(TLP, 175)
 ## VC - Content
 BtnVCHDMI    = Button(TLP, 181)
 BtnVCVGA     = Button(TLP, 182)
@@ -175,6 +156,25 @@ BtnVCShare   = Button(TLP, 184)
 BtnVCBack2   = Button(TLP, 185)
 BtnVCSend    = Button(TLP, 186)
 BtnVCStop    = Button(TLP, 187)
+## VC - Camera
+BtnVCP1      = Button(TLP, 161)
+BtnVCP2      = Button(TLP, 162)
+BtnVCP3      = Button(TLP, 163)
+BtnVCP4      = Button(TLP, 164)
+BtnVCP5      = Button(TLP, 165)
+BtnVCRecall  = Button(TLP, 166)
+BtnVCSave  = Button(TLP, 167)
+##
+BtnVCZoom1   = Button(TLP, 168, repeatTime = 0.1)
+BtnVCZoom2   = Button(TLP, 169, repeatTime = 0.1)
+##
+BtnVCUp      = Button(TLP, 170, repeatTime = 0.1)
+BtnVCLeft    = Button(TLP, 171, repeatTime = 0.1)
+BtnVCDown    = Button(TLP, 172, repeatTime = 0.1)
+BtnVCRight   = Button(TLP, 173, repeatTime = 0.1)
+##
+BtnVCLocal   = Button(TLP, 174)
+BtnVCRemote  = Button(TLP, 175)
 ## Status
 Btn232LCD1   = Button(TLP, 201)
 Btn232LCD2   = Button(TLP, 202)
@@ -191,36 +191,65 @@ Lbl1Vaddio   = Label(TLP, 212)
 Lbl2Vaddio   = Label(TLP, 213)
 Lbl3Vaddio   = Label(TLP, 214)
 ## Power
-BtnPowerAll  = Button(TLP, 220)
+BtnPowerAll  = Button(TLP, 220, holdTime = 3)
 LblPowerAll  = Label(TLP, 221)
 
-## Group Buttons
-PageMain   = [BtnVideo, BtnVC, BtnWebex, BtnRec, BtnVoIP, BtnAudio, BtnStatus, BtnPwrOff]
+## Group Main
+PageMain   = [BtnVideo, BtnVC, BtnWebex, BtnRec, BtnVoIP, 
+              BtnAudio, BtnStatus, BtnPwrOff]
 GroupMain  = MESet(PageMain)
-##
+## Group Video
 PageVideo   = [BtnDisplayL, BtnDisplayR, BtnPTZ]
-PageLCD1    = [BtnLHDMI, BtnLVGA, BtnLPTZ, BtnLShare, BtnLPwrOn, BtnLPwrOff, BtnLBack]
-PageLCD2    = [BtnRHDMI, BtnRVGA, BtnRPTZ, BtnRShare, BtnRPwrOn, BtnRPwrOff, BtnRBack]
-PagePTZNav  = [BtnPTZUp, BtnPTZLeft, BtnPTZDown, BtnPTZRight, BtnZoom1, BtnZoom2, BtnPTZPwr]
+## Group Display L
+PageLCD1    = [BtnLHDMI, BtnLVGA, BtnLPTZ, BtnLShare, BtnLPwrOn, 
+               BtnLPwrOff, BtnLBack]
+## Group Display R
+PageLCD2    = [BtnRHDMI, BtnRVGA, BtnRPTZ, BtnRShare, BtnRPwrOn,
+               BtnRPwrOff, BtnRBack]
+## Group PTZ
+PagePTZNav  = [BtnPTZUp, BtnPTZLeft, BtnPTZDown, BtnPTZRight,
+               BtnZoom1, BtnZoom2, BtnPTZPwr]
 PagePTZPst  = [BtnP1, BtnP2, BtnP3, BtnP4, BtnP5, BtnRecall, BtnSave]
 GroupPTZ    = MESet([BtnRecall, BtnSave])
+## Group VC
+PageVCCall  = [BtnVCCall, BtnVCHangup]
+PageVCDial  = [BtnVCDial0, BtnVCDial1, BtnVCDial2, BtnVCDial3, BtnVCDial4,
+               BtnVCDial5, BtnVCDial6, BtnVCDial7, BtnVCDial8, BtnVCDial9,
+               BtnVCDialA, BtnVCDialG]
+PageVCOpt   = [BtnVCEnviar, BtnVCCamara, BtnVCAutoAn, BtnVCDelete]
+PageVCShare = [BtnVCHDMI, BtnVCVGA, BtnVCPTZ, BtnVCShare, BtnVCBack2,
+               BtnVCSend, BtnVCStop]
+PageVCCamN  = [BtnVCZoom1, BtnVCZoom2, BtnVCUp, BtnVCLeft, BtnVCDown,
+               BtnVCRight, BtnVCLocal, BtnVCRemote]
+PageVCCamP  = [BtnVCP1, BtnVCP2, BtnVCP3, BtnVCP4, BtnVCP5,
+               BtnVCRecall, BtnVCSave]
+GroupVCPTZ  = MESet([BtnVCRecall, BtnVCSave])
+GroupVCCam  = MESet([BtnVCLocal, BtnVCRemote])
+## Group Webex
+PageWebex   = [BtnWHDMI, BtnWVGA, BtnWPTZ, BtnWShare, BtnWCisco1, BtnWCisco2]
+## Group REC
 PageRecV    = [Btn4HDMI, Btn4VGA, Btn4PTZ, Btn4Share, Btn4Cisco1, Btn4Cisco2]
 PageRecA    = [Btn4Mic, Btn4VC, Btn4VoIP, Btn4PC]
 PageRecNav  = [BtnPause, BtnREC, BtnStop]
-PageVCCall  = [BtnVCCall, BtnVCHangup]
-PageVCDial  = [BtnVCDial0, BtnVCDial1, BtnVCDial2, BtnVCDial3, BtnVCDial4, BtnVCDial5,
-              BtnVCDial6, BtnVCDial7, BtnVCDial8, BtnVCDial9, BtnVCDialA, BtnVCDialG]
-PageVCOpt   = [BtnVCEnviar, BtnVCCamara, BtnVCAutoAn, BtnVCDelete]
-PageVCShare = [BtnVCHDMI, BtnVCVGA, BtnVCPTZ, BtnVCShare, BtnVCBack2, BtnVCSend, BtnVCStop]
+## Group VoIP
 PageTelCall = [BtnCall, BtnHangup]
 PageTelDial = [BtnDial0, BtnDial1, BtnDial2, BtnDial3, BtnDial4, BtnDial5,
                BtnDial6, BtnDial7, BtnDial8, BtnDial9, BtnDialA, BtnDialG]
 PageTelOpt  = [BtnRedial, BtnDTMF, BtnHold, BtnDelete]
+## Group Audio
 ##
 ButtonEventList = ['Pressed', 'Released', 'Held', 'Repeated', 'Tapped']
 ## End Communication Interface Definition --------------------------------------
 
 def Initialize():
+    #--
+    global PTZ_Status
+    global VC_Status
+    VC_Status['Preset_Mode'] = 'Recall'    
+    VC_Status['Camera'] = 'Local'
+    GroupVCPTZ.SetCurrent(BtnVCRecall)
+    GroupVCCam.SetCurrent(BtnVCLocal)
+    #--
     TLP.ShowPage('Index')
     pass
 
@@ -229,7 +258,11 @@ PTZ_Status = {
     'Preset_Mode' : '',
     'Power'       : '',
 }
-
+VC_Status = {
+    'Preset_Mode' : '',
+    'Camera'      : '',
+    'Power'       : '',
+}
 ## Event Definitions -----------------------------------------------------------
 @event(BtnIndex,'Pressed')
 def IndexEvents(button, state):
@@ -294,7 +327,7 @@ def VideoEvents(button, state):
     
 ## Page Display L --------------------------------------------------------------
 @event(PageLCD1, ButtonEventList)
-def LCD1Events(button, state):
+def DisplayLEvents(button, state):
     if button is BtnLHDMI and state == 'Pressed':
         print('Button Pressed - LCD L: %s' % 'HDMI')
     elif button is BtnLVGA and state == 'Pressed':
@@ -313,7 +346,7 @@ def LCD1Events(button, state):
     pass
 ## Page Display R --------------------------------------------------------------
 @event(PageLCD2, ButtonEventList)
-def LCD2Events(button, state):
+def DisplayREvents(button, state):
     if button is BtnRHDMI and state == 'Pressed':
         print('Button Pressed - LCD R: %s' % 'HDMI')
     elif button is BtnRVGA and state == 'Pressed':
@@ -480,7 +513,6 @@ def VCOptEvents(button, state):
     elif button is BtnVCDelete and state == 'Repeated':
         print('Button Repeated - VC: %s' % 'Delete')
     pass
-## Page VC Camera --------------------------------------------------------------
 ## Page VC Content -------------------------------------------------------------
 @event(PageVCShare, ButtonEventList)
 def VCCamEvents(button, state):
@@ -493,13 +525,159 @@ def VCCamEvents(button, state):
     elif button is BtnVCShare and state == 'Pressed':
         print('Button Pressed - VC Share: %s' % 'ClickShare')
     elif button is BtnVCBack2 and state == 'Pressed':
+        TLP.ShowPopup('VC')
         print('Button Pressed - VC Share: %s' % 'Back')
     elif button is BtnVCSend and state == 'Pressed':
         print('Button Pressed - VC Share: %s' % 'Send')
     elif button is BtnVCStop and state == 'Pressed':
         print('Button Pressed - VC Share: %s' % 'Stop')
     pass
+## Page VC Camera --------------------------------------------------------------
+@event(PageVCCamN,ButtonEventList)
+def VCNavEvents(button, state):
+    #--
+    if button is BtnVCUp and state == 'Pressed':
+        print('Button Pressed - Cisco: %s' % 'Cam Up')
+    elif button is BtnVCUp and state == 'Repeated':
+        print('Button Repeated - Cisco: %s' % 'Cam Up')
+    elif button is BtnVCUp and state == 'Released':
+        print('Button Relased - Cisco: %s' % 'Cam Up - Stop')
+    #--
+    elif button is BtnVCLeft and state == 'Pressed':
+        print('Button Pressed - Cisco: %s' % 'Cam Left')
+    elif button is BtnVCLeft and state == 'Repeated':
+        print('Button Repeated - Cisco: %s' % 'Cam Left')
+    elif button is BtnVCLeft and state == 'Released':
+        print('Button Relased - Cisco: %s' % 'Cam Left - Stop')
+    #--
+    elif button is BtnVCDown and state == 'Pressed':
+        print('Button Pressed - Cisco: %s' % 'Cam Down')
+    elif button is BtnVCDown and state == 'Repeated':
+        print('Button Repeated - Cisco: %s' % 'Cam Down')
+    elif button is BtnVCDown and state == 'Released':
+        print('Button Relased - Cisco: %s' % 'Cam Down - Stop')
+    #--
+    elif button is BtnVCRight and state == 'Pressed':
+        print('Button Pressed - Cisco: %s' % 'Cam Right')
+    elif button is BtnVCRight and state == 'Repeated':
+        print('Button Repeated - Cisco: %s' % 'Cam Right')
+    elif button is BtnVCRight and state == 'Released':
+        print('Button Relased - Cisco: %s' % 'Cam Right - Stop')
+    #--
+    elif button is BtnVCZoom1 and state == 'Pressed':
+        print('Button Pressed - Cisco: %s' % 'Cam Zoom+')
+    elif button is BtnVCZoom1 and state == 'Repeated':
+        print('Button Repeated - Cisco: %s' % 'Cam Zoom+')
+    elif button is BtnVCZoom1 and state == 'Released':
+        print('Button Relased - Cisco: %s' % 'Cam Zoom+ - Stop')
+    #--
+    elif button is BtnVCZoom2 and state == 'Pressed':
+        print('Button Pressed - Cisco: %s' % 'Cam Zoom-')
+    elif button is BtnVCZoom2 and state == 'Repeated':
+        print('Button Repeated - Cisco: %s' % 'Cam Zoom-')
+    elif button is BtnVCZoom2 and state == 'Released':
+        print('Button Relased - Cisco: %s' % 'Cam Zoom- - Stop')
+    #--
+    if button is BtnVCLocal and state == 'Pressed':
+        VC_Status['Camera'] = 'Local'
+        GroupVCCam.SetCurrent(BtnVCLocal)
+        print('Button Pressed - Cisco: %s' % 'Cam Local')
+    #--
+    elif button is BtnVCRemote and state == 'Pressed':
+        VC_Status['Camera'] = 'Remote'
+        GroupVCCam.SetCurrent(BtnVCRemote)
+        print('Button Pressed - Cisco: %s' % 'Cam Remote')
+    pass
+
+@event(PageVCCamP, ButtonEventList)
+def VCCamEvents(button, state):
+    #--
+    if button is BtnVCP1 and state == 'Pressed':
+        if VC_Status['Camera'] == 'Local':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Local Preset Cisco: %s' % '1')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Local Preset Cisco: %s' % '1')
+        elif VC_Status['Camera'] == 'Remote':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Remote Preset Cisco: %s' % '1')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Remote Preset Cisco: %s' % '1')
+    #--
+    elif button is BtnVCP2 and state == 'Pressed':
+        if VC_Status['Camera'] == 'Local':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Local Preset Cisco: %s' % '2')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Local Preset Cisco: %s' % '2')
+        elif VC_Status['Camera'] == 'Remote':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Remote Preset Cisco: %s' % '2')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Remote Preset Cisco: %s' % '2')
+    #--
+    elif button is BtnVCP3 and state == 'Pressed':
+        if VC_Status['Camera'] == 'Local':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Local Preset Cisco: %s' % '3')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Local Preset Cisco: %s' % '3')
+        elif VC_Status['Camera'] == 'Remote':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Remote Preset Cisco: %s' % '3')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Remote Preset Cisco: %s' % '3')
+    #--
+    elif button is BtnVCP4 and state == 'Pressed':
+        if VC_Status['Camera'] == 'Local':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Local Preset Cisco: %s' % '4')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Local Preset Cisco: %s' % '4')
+        elif VC_Status['Camera'] == 'Remote':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Remote Preset Cisco: %s' % '4')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Remote Preset Cisco: %s' % '4')
+    #--
+    elif button is BtnVCP5 and state == 'Pressed':
+        if VC_Status['Camera'] == 'Local':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Local Preset Cisco: %s' % '5')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Local Preset Cisco: %s' % '5')
+        elif VC_Status['Camera'] == 'Remote':
+            if VC_Status['Preset_Mode'] == 'Recall':
+                print('Recall Remote Preset Cisco: %s' % '5')
+            elif VC_Status['Preset_Mode'] == 'Save':
+                print('Save Remote Preset Cisco: %s' % '5')
+    #--
+    elif button is BtnVCRecall and state == 'Pressed':
+        VC_Status['Preset_Mode'] = 'Recall'
+        GroupVCPTZ.SetCurrent(BtnVCRecall)
+        print('Button Pressed - Cisco: %s' % 'Recall')
+    #--
+    elif button is BtnVCSave and state == 'Pressed':
+        VC_Status['Preset_Mode'] = 'Save'
+        GroupVCPTZ.SetCurrent(BtnVCSave)
+        print('Button Pressed - Cisco: %s' % 'Save')
+    pass
 ## Page Webex ------------------------------------------------------------------
+@event(PageWebex, ButtonEventList)
+def WebexEvents(button, state):
+    if button is BtnWHDMI and state == 'Pressed':
+        print('Button Pressed - Webex: %s' % 'HDMI')
+    elif button is BtnWVGA and state == 'Pressed':
+        print('Button Pressed - Webex: %s' % 'VGA')
+    elif button is BtnWPTZ and state == 'Pressed':
+        print('Button Pressed - Webex: %s' % 'PTZ')
+    elif button is BtnWShare and state == 'Pressed':
+        print('Button Pressed - Webex: %s' % 'ShareLink')
+    elif button is BtnWCisco1 and state == 'Pressed':
+        print('Button Pressed - Webex: %s' % 'Cisco 1')
+    elif button is BtnWCisco2 and state == 'Pressed':
+        print('Button Pressed - Webex: %s' % 'Cisco 2')
+    pass
 ## Page Recording --------------------------------------------------------------
 @event(PageRecV, ButtonEventList)
 def RecEventsV(button, state):
@@ -592,7 +770,14 @@ def VCOptEvents(button, state):
 ## Page Audio ------------------------------------------------------------------
 ## Page Status -----------------------------------------------------------------
 ## Page PowerOff ---------------------------------------------------------------
-
+@event(BtnPowerAll, ButtonEventList)
+def PowerEvents(button, state):
+    if state == 'Pressed':
+        print('Button Pressed: %s' % 'PowerAll')
+    elif state == 'Held':
+        print('Button Held: %s' % 'PowerAll')
+    pass
 ## End Events Definitions-------------------------------------------------------
 
 Initialize()
+
