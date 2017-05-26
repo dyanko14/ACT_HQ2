@@ -16,9 +16,12 @@ print(Version())
 
 ## End User Import -------------------------------------------------------------
 ##
+## Begin Device Definition -----------------------------------------------------
+Matrix = EthernetClientInterface('192.168.0.10', 23)
+## End Device Definition -------------------------------------------------------
+##
 ## Begin Device/Processor Definition -------------------------------------------
 IPCP = ProcessorDevice('IPlink')
-
 ## End Device/Processor Definition ---------------------------------------------
 ##
 ## Begin Device/User Interface Definition --------------------------------------
@@ -175,24 +178,39 @@ BtnVCRight   = Button(TLP, 173, repeatTime = 0.1)
 ##
 BtnVCLocal   = Button(TLP, 174)
 BtnVCRemote  = Button(TLP, 175)
+## Audio
+BtnXHDMI     = Button(TLP, 188)
+BtnXVGA      = Button(TLP, 189)
+BtnXShare    = Button(TLP, 190)
+##
+BtnXSpkLess  = Button(TLP, 191, repeatTime = 0.1)
+BtnXSpkPlus  = Button(TLP, 192, repeatTime = 0.1)
+BtnXVCLess   = Button(TLP, 193, repeatTime = 0.1)
+BtnXVCPlus   = Button(TLP, 194, repeatTime = 0.1)
+LevelSpk     = Level(TLP, 195)
+LevelVC      = Level(TLP, 196)
+##
+BtnXSpk      = Button(TLP, 197)
+BtnXVC       = Button(TLP, 198)
+BtnXMics     = Button(TLP, 199)
 ## Status
-Btn232LCD1   = Button(TLP, 201)
-Btn232LCD2   = Button(TLP, 202)
-BtnLANMatrix = Button(TLP, 203)
-BtnLANTesira = Button(TLP, 204)
-Btn232PTZ    = Button(TLP, 205)
-Btn232Cisco  = Button(TLP, 206)
-BtnLANRec    = Button(TLP, 207)
-RecLabel1    = Label(TLP, 208)
-RecLabel2    = Label(TLP, 209)
-RecLabel3    = Label(TLP, 210)
-BtnLanVaddio = Button(TLP, 211)
-Lbl1Vaddio   = Label(TLP, 212)
-Lbl2Vaddio   = Label(TLP, 213)
-Lbl3Vaddio   = Label(TLP, 214)
+Btn232LCD1   = Button(TLP, 211)
+Btn232LCD2   = Button(TLP, 212)
+BtnLANMatrix = Button(TLP, 213)
+BtnLANTesira = Button(TLP, 214)
+Btn232PTZ    = Button(TLP, 215)
+Btn232Cisco  = Button(TLP, 216)
+BtnLANRec    = Button(TLP, 217)
+RecLabel1    = Label(TLP, 218)
+RecLabel2    = Label(TLP, 219)
+RecLabel3    = Label(TLP, 220)
+BtnLanVaddio = Button(TLP, 221)
+Lbl1Vaddio   = Label(TLP, 222)
+Lbl2Vaddio   = Label(TLP, 223)
+Lbl3Vaddio   = Label(TLP, 224)
 ## Power
-BtnPowerAll  = Button(TLP, 220, holdTime = 3)
-LblPowerAll  = Label(TLP, 221)
+BtnPowerAll  = Button(TLP, 250, holdTime = 3)
+LblPowerAll  = Label(TLP, 251)
 
 ## Group Main
 PageMain   = [BtnVideo, BtnVC, BtnWebex, BtnRec, BtnVoIP, 
@@ -237,6 +255,9 @@ PageTelDial = [BtnDial0, BtnDial1, BtnDial2, BtnDial3, BtnDial4, BtnDial5,
                BtnDial6, BtnDial7, BtnDial8, BtnDial9, BtnDialA, BtnDialG]
 PageTelOpt  = [BtnRedial, BtnDTMF, BtnHold, BtnDelete]
 ## Group Audio
+PageAudio1  = [BtnXHDMI, BtnXVGA, BtnXShare]
+PageAudio2  = [BtnXSpkLess, BtnXSpkPlus, BtnXVCLess, BtnXVCPlus]
+PageAudio3  = [BtnXSpk, BtnXVC, BtnXMics]
 ##
 ButtonEventList = ['Pressed', 'Released', 'Held', 'Repeated', 'Tapped']
 ## End Communication Interface Definition --------------------------------------
@@ -329,12 +350,16 @@ def VideoEvents(button, state):
 @event(PageLCD1, ButtonEventList)
 def DisplayLEvents(button, state):
     if button is BtnLHDMI and state == 'Pressed':
+        Matrix.Send('1*1%')
         print('Button Pressed - LCD L: %s' % 'HDMI')
     elif button is BtnLVGA and state == 'Pressed':
+        Matrix.Send('2*1%')
         print('Button Pressed - LCD L: %s' % 'VGA')
     elif button is BtnLPTZ and state == 'Pressed':
+        Matrix.Send('3*1%')
         print('Button Pressed - LCD L: %s' % 'PTZ')
     elif button is BtnLShare and state == 'Pressed':
+        Matrix.Send('4*1%')
         print('Button Pressed - LCD L: %s' % 'ShareLink')
     elif button is BtnLPwrOn and state == 'Pressed':
         print('Button Pressed - LCD L: %s' % 'PowerOn')
@@ -348,12 +373,16 @@ def DisplayLEvents(button, state):
 @event(PageLCD2, ButtonEventList)
 def DisplayREvents(button, state):
     if button is BtnRHDMI and state == 'Pressed':
+        Matrix.Send('1*2%')
         print('Button Pressed - LCD R: %s' % 'HDMI')
     elif button is BtnRVGA and state == 'Pressed':
+        Matrix.Send('2*2%')
         print('Button Pressed - LCD R: %s' % 'VGA')
     elif button is BtnRPTZ and state == 'Pressed':
+        Matrix.Send('3*2%')
         print('Button Pressed - LCD R: %s' % 'PTZ')
     elif button is BtnRShare and state == 'Pressed':
+        Matrix.Send('4*2%')
         print('Button Pressed - LCD R: %s' % 'ShareLink')
     elif button is BtnRPwrOn and state == 'Pressed':
         print('Button Pressed - LCD R: %s' % 'PowerOn')
@@ -517,12 +546,16 @@ def VCOptEvents(button, state):
 @event(PageVCShare, ButtonEventList)
 def VCCamEvents(button, state):
     if button is BtnVCHDMI and state == 'Pressed':
+        Matrix.Send('1*3%')
         print('Button Pressed - VC Share: %s' % 'HDMI')
     elif button is BtnVCVGA and state == 'Pressed':
+        Matrix.Send('2*3%')
         print('Button Pressed - VC Share: %s' % 'VGA')
     elif button is BtnVCPTZ and state == 'Pressed':
+        Matrix.Send('3*3%')
         print('Button Pressed - VC Share: %s' % 'PTZ')
     elif button is BtnVCShare and state == 'Pressed':
+        Matrix.Send('4*3%')
         print('Button Pressed - VC Share: %s' % 'ClickShare')
     elif button is BtnVCBack2 and state == 'Pressed':
         TLP.ShowPopup('VC')
@@ -666,32 +699,44 @@ def VCCamEvents(button, state):
 @event(PageWebex, ButtonEventList)
 def WebexEvents(button, state):
     if button is BtnWHDMI and state == 'Pressed':
+        Matrix.Send('1*5%')
         print('Button Pressed - Webex: %s' % 'HDMI')
     elif button is BtnWVGA and state == 'Pressed':
+        Matrix.Send('2*5%')
         print('Button Pressed - Webex: %s' % 'VGA')
     elif button is BtnWPTZ and state == 'Pressed':
+        Matrix.Send('3*5%')
         print('Button Pressed - Webex: %s' % 'PTZ')
     elif button is BtnWShare and state == 'Pressed':
+        Matrix.Send('4*5%')
         print('Button Pressed - Webex: %s' % 'ShareLink')
     elif button is BtnWCisco1 and state == 'Pressed':
+        Matrix.Send('5*5%')
         print('Button Pressed - Webex: %s' % 'Cisco 1')
     elif button is BtnWCisco2 and state == 'Pressed':
+        Matrix.Send('6*5%')
         print('Button Pressed - Webex: %s' % 'Cisco 2')
     pass
 ## Page Recording --------------------------------------------------------------
 @event(PageRecV, ButtonEventList)
 def RecEventsV(button, state):
     if button is Btn4HDMI and state == 'Pressed':
+        Matrix.Send('1*4%')
         print('Button Pressed - REC: %s' % 'HDMI')
     elif button is Btn4VGA and state == 'Pressed':
+        Matrix.Send('2*4%')
         print('Button Pressed - REC: %s' % 'VGA')
     elif button is Btn4PTZ and state == 'Pressed':
+        Matrix.Send('3*4%')
         print('Button Pressed - REC: %s' % 'PTZ')
     elif button is Btn4Share and state == 'Pressed':
+        Matrix.Send('4*4%')
         print('Button Pressed - REC: %s' % 'ShareLink')
     elif button is Btn4Cisco1 and state == 'Pressed':
+        Matrix.Send('5*4%')
         print('Button Pressed - REC: %s' % 'Cisco 1')
     elif button is Btn4Cisco2 and state == 'Pressed':
+        Matrix.Send('6*4%')
         print('Button Pressed - REC: %s' % 'Cisco 2')
     pass
 
@@ -768,6 +813,48 @@ def VCOptEvents(button, state):
         print('Button Repeated - VoIP: %s' % 'Delete')
     pass
 ## Page Audio ------------------------------------------------------------------
+@event(PageAudio1, ButtonEventList)
+def AudioSourceEvents(button, state):
+    if button is BtnXHDMI and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'HDMI')
+    elif button is BtnXVGA and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'VGA')
+    elif button is BtnXShare and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'ShareLink')
+    pass
+    
+@event(PageAudio2, ButtonEventList)
+def AudioVolEvents(button, state):
+    if button is BtnXSpkLess and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'Spk-')
+    elif button is BtnXSpkLess and state == 'Repeated':
+        print('Button Repeated - Audio: %s' % 'Spk-')
+    #--
+    elif button is BtnXSpkPlus and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'Spk+')
+    elif button is BtnXSpkPlus and state == 'Repeated':
+        print('Button Repeated - Audio: %s' % 'Spk+')
+    #--
+    elif button is BtnXVCLess and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'VC-')
+    elif button is BtnXVCLess and state == 'Repeated':
+        print('Button Repeated - Audio: %s' % 'VC-')
+    #--
+    elif button is BtnXVCPlus and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'VC+')
+    elif button is BtnXVCPlus and state == 'Repeated':
+        print('Button Repeated - Audio: %s' % 'VC+')
+    pass
+    
+@event(PageAudio3, ButtonEventList)
+def AudioMuteEvents(button, state):
+    if button is BtnXSpk and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'Mute Spk')
+    elif button is BtnXVC and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'Mute VC')
+    elif button is BtnXMics and state == 'Pressed':
+        print('Button Pressed - Audio: %s' % 'Mute Mics')
+    pass
 ## Page Status -----------------------------------------------------------------
 ## Page PowerOff ---------------------------------------------------------------
 @event(BtnPowerAll, ButtonEventList)
