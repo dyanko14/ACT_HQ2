@@ -13,11 +13,15 @@ print(Version())
 ## End ControlScript Import ----------------------------------------------------
 ##
 ## Begin User Import -----------------------------------------------------------
-
+import extr_matrix_DXPHD4k_Series_v1_1_1_0 as MatrixLAN
+import extr_sm_SMP_300_Series_v1_8_0_1 as SMP351LAN
+#--
+Matrix = MatrixLAN.EthernetClass('10.10.10.50', 23, Model='DXP 44 HD 4k')
+SMP351 = SMP351LAN.EthernetClass('10.10.10.51', 23, Model='SMP 351')
 ## End User Import -------------------------------------------------------------
 ##
 ## Begin Device Definition -----------------------------------------------------
-Matrix = EthernetClientInterface('192.168.0.10', 23)
+
 ## End Device Definition -------------------------------------------------------
 ##
 ## Begin Device/Processor Definition -------------------------------------------
@@ -289,7 +293,7 @@ VC_Status = {
 def IndexEvents(button, state):
     TLP.ShowPage('Main')
     TLP.ShowPopup('x_Welcome')
-    print('TouchMode: %s' % 'Index')
+    print('Touch Mode: %s' % 'Index')
     pass
 ## Page Main -------------------------------------------------------------------
 @event(PageMain, ButtonEventList)
@@ -298,34 +302,43 @@ def MainEvents(button, state):
         TLP.ShowPopup('Video')
         LblMode.SetText('Selección de Video')
         print('Touch Mode: %s' % 'Video')
+    #--
     elif button is BtnVC and state == 'Pressed':
         TLP.ShowPopup('VC')
         LblMode.SetText('Control de Videoconferencia')
         print('Touch Mode: %s' % 'VC')
+    #--
     elif button is BtnWebex and state == 'Pressed':
         TLP.ShowPopup('Webex')
         LblMode.SetText('Control de Webconferencia')
         print('Touch Mode: %s' % 'Webex')
+    #--
     elif button is BtnRec and state == 'Pressed':
         TLP.ShowPopup('Recording')
         LblMode.SetText('Control de Grabación')
+        SMP351.Set('RecordingMode','Audio and Video')
         print('Touch Mode: %s' % 'Recording')
+    #--
     elif button is BtnVoIP and state == 'Pressed':
         TLP.ShowPopup('VoIP')
         LblMode.SetText('Telefonía IP')
         print('Touch Mode: %s' % 'VoIP')
+    #--
     elif button is BtnAudio and state == 'Pressed':
         TLP.ShowPopup('Audio')
         LblMode.SetText('Control de Audio')
         print('Touch Mode: %s' % 'Audio')
+    #--
     elif button is BtnStatus and state == 'Pressed':
         TLP.ShowPopup('Status')
         LblMode.SetText('Información de Dispositivos')
         print('Touch Mode: %s' % 'Status')
+    #--
     elif button is BtnPwrOff and state == 'Pressed':
         TLP.ShowPopup('x_PowerOff')
         LblMode.SetText('¿Deseas Apagar el Sistema?')
         print('Touch Mode: %s' % 'PowerOff')
+    #--
     GroupMain.SetCurrent(button)
     pass
     
@@ -350,16 +363,16 @@ def VideoEvents(button, state):
 @event(PageLCD1, ButtonEventList)
 def DisplayLEvents(button, state):
     if button is BtnLHDMI and state == 'Pressed':
-        Matrix.Send('1*1%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'1','Output':'1','Tie Type':'Video'})
         print('Button Pressed - LCD L: %s' % 'HDMI')
     elif button is BtnLVGA and state == 'Pressed':
-        Matrix.Send('2*1%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'2','Output':'1','Tie Type':'Video'})
         print('Button Pressed - LCD L: %s' % 'VGA')
     elif button is BtnLPTZ and state == 'Pressed':
-        Matrix.Send('3*1%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'3','Output':'1','Tie Type':'Video'})
         print('Button Pressed - LCD L: %s' % 'PTZ')
     elif button is BtnLShare and state == 'Pressed':
-        Matrix.Send('4*1%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'4','Output':'1','Tie Type':'Video'})
         print('Button Pressed - LCD L: %s' % 'ShareLink')
     elif button is BtnLPwrOn and state == 'Pressed':
         print('Button Pressed - LCD L: %s' % 'PowerOn')
@@ -373,16 +386,16 @@ def DisplayLEvents(button, state):
 @event(PageLCD2, ButtonEventList)
 def DisplayREvents(button, state):
     if button is BtnRHDMI and state == 'Pressed':
-        Matrix.Send('1*2%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'1','Output':'2','Tie Type':'Video'})
         print('Button Pressed - LCD R: %s' % 'HDMI')
     elif button is BtnRVGA and state == 'Pressed':
-        Matrix.Send('2*2%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'2','Output':'2','Tie Type':'Video'})
         print('Button Pressed - LCD R: %s' % 'VGA')
     elif button is BtnRPTZ and state == 'Pressed':
-        Matrix.Send('3*2%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'3','Output':'2','Tie Type':'Video'})
         print('Button Pressed - LCD R: %s' % 'PTZ')
     elif button is BtnRShare and state == 'Pressed':
-        Matrix.Send('4*2%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'4','Output':'2','Tie Type':'Video'})
         print('Button Pressed - LCD R: %s' % 'ShareLink')
     elif button is BtnRPwrOn and state == 'Pressed':
         print('Button Pressed - LCD R: %s' % 'PowerOn')
@@ -546,16 +559,16 @@ def VCOptEvents(button, state):
 @event(PageVCShare, ButtonEventList)
 def VCCamEvents(button, state):
     if button is BtnVCHDMI and state == 'Pressed':
-        Matrix.Send('1*3%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'1','Output':'3','Tie Type':'Video'})
         print('Button Pressed - VC Share: %s' % 'HDMI')
     elif button is BtnVCVGA and state == 'Pressed':
-        Matrix.Send('2*3%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'2','Output':'3','Tie Type':'Video'})
         print('Button Pressed - VC Share: %s' % 'VGA')
     elif button is BtnVCPTZ and state == 'Pressed':
-        Matrix.Send('3*3%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'3','Output':'3','Tie Type':'Video'})
         print('Button Pressed - VC Share: %s' % 'PTZ')
     elif button is BtnVCShare and state == 'Pressed':
-        Matrix.Send('4*3%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'4','Output':'3','Tie Type':'Video'})
         print('Button Pressed - VC Share: %s' % 'ClickShare')
     elif button is BtnVCBack2 and state == 'Pressed':
         TLP.ShowPopup('VC')
@@ -699,44 +712,44 @@ def VCCamEvents(button, state):
 @event(PageWebex, ButtonEventList)
 def WebexEvents(button, state):
     if button is BtnWHDMI and state == 'Pressed':
-        Matrix.Send('1*5%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'1','Output':'5','Tie Type':'Video'})
         print('Button Pressed - Webex: %s' % 'HDMI')
     elif button is BtnWVGA and state == 'Pressed':
-        Matrix.Send('2*5%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'2','Output':'5','Tie Type':'Video'})
         print('Button Pressed - Webex: %s' % 'VGA')
     elif button is BtnWPTZ and state == 'Pressed':
-        Matrix.Send('3*5%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'3','Output':'5','Tie Type':'Video'})
         print('Button Pressed - Webex: %s' % 'PTZ')
     elif button is BtnWShare and state == 'Pressed':
-        Matrix.Send('4*5%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'4','Output':'5','Tie Type':'Video'})
         print('Button Pressed - Webex: %s' % 'ShareLink')
     elif button is BtnWCisco1 and state == 'Pressed':
-        Matrix.Send('5*5%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'5','Output':'5','Tie Type':'Video'})
         print('Button Pressed - Webex: %s' % 'Cisco 1')
     elif button is BtnWCisco2 and state == 'Pressed':
-        Matrix.Send('6*5%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'6','Output':'5','Tie Type':'Video'})
         print('Button Pressed - Webex: %s' % 'Cisco 2')
     pass
 ## Page Recording --------------------------------------------------------------
 @event(PageRecV, ButtonEventList)
 def RecEventsV(button, state):
     if button is Btn4HDMI and state == 'Pressed':
-        Matrix.Send('1*4%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'1','Output':'4','Tie Type':'Video'})
         print('Button Pressed - REC: %s' % 'HDMI')
     elif button is Btn4VGA and state == 'Pressed':
-        Matrix.Send('2*4%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'2','Output':'4','Tie Type':'Video'})
         print('Button Pressed - REC: %s' % 'VGA')
     elif button is Btn4PTZ and state == 'Pressed':
-        Matrix.Send('3*4%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'3','Output':'4','Tie Type':'Video'})
         print('Button Pressed - REC: %s' % 'PTZ')
     elif button is Btn4Share and state == 'Pressed':
-        Matrix.Send('4*4%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'4','Output':'4','Tie Type':'Video'})
         print('Button Pressed - REC: %s' % 'ShareLink')
     elif button is Btn4Cisco1 and state == 'Pressed':
-        Matrix.Send('5*4%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'5','Output':'4','Tie Type':'Video'})
         print('Button Pressed - REC: %s' % 'Cisco 1')
     elif button is Btn4Cisco2 and state == 'Pressed':
-        Matrix.Send('6*4%')
+        Matrix.Set('MatrixTieCommand', None, {'Input':'6','Output':'4','Tie Type':'Video'})
         print('Button Pressed - REC: %s' % 'Cisco 2')
     pass
 
@@ -755,10 +768,13 @@ def RecEventsA(button, state):
 @event(PageRecNav, ButtonEventList)
 def RecEventsNav(button, state):
     if button is BtnPause and state == 'Pressed':
+        SMP351.Set('Record','Pause')
         print('Button Pressed - REC: %s' % 'Pause')
     elif button is BtnREC and state == 'Pressed':
+        SMP351.Set('Record','Start')
         print('Button Pressed - REC: %s' % 'Rec')
     elif button is BtnStop and state == 'Pressed':
+        SMP351.Set('Record','Stop')
         print('Button Pressed - REC: %s' % 'Stop')
     pass
 ## Page VoIP -------------------------------------------------------------------
@@ -816,10 +832,13 @@ def VCOptEvents(button, state):
 @event(PageAudio1, ButtonEventList)
 def AudioSourceEvents(button, state):
     if button is BtnXHDMI and state == 'Pressed':
+        Matrix.Set('MatrixTieCommand', None, {'Input':'1','Output':'1','Tie Type':'Audio'})
         print('Button Pressed - Audio: %s' % 'HDMI')
     elif button is BtnXVGA and state == 'Pressed':
+        Matrix.Set('MatrixTieCommand', None, {'Input':'2','Output':'1','Tie Type':'Audio'})
         print('Button Pressed - Audio: %s' % 'VGA')
     elif button is BtnXShare and state == 'Pressed':
+        Matrix.Set('MatrixTieCommand', None, {'Input':'4','Output':'1','Tie Type':'Audio'})
         print('Button Pressed - Audio: %s' % 'ShareLink')
     pass
     
