@@ -14,12 +14,17 @@ print(Version())
 ##
 ## Begin User Import -----------------------------------------------------------
 import extr_matrix_DXPHD4k_Series_v1_1_1_0 as MatrixLAN
-import extr_sm_SMP_300_Series_v1_8_0_1 as SMP351LAN
-import csco_vtc_SX_Series_TC73_v1_3_0_0 as CiscoLAN
+import extr_sm_SMP_300_Series_v1_8_0_1     as SMP351LAN
+import csco_vtc_SX_Series_TC73_v1_3_0_0    as CiscoLAN
+import extr_other_MediaPort200_v1_1_0_0    as MediaPort
+import biam_dsp_TesiraSeries_v1_5_19_0     as TesiraLAN
 #--
-Matrix = MatrixLAN.EthernetClass('10.10.10.50', 23, Model='DXP 44 HD 4k')
+Matrix = MatrixLAN.EthernetClass('10.10.10.50', 23, Model='DXP 88 HD 4k')
 SMP351 = SMP351LAN.EthernetClass('10.10.10.51', 23, Model='SMP 351')
 Cisco  = CiscoLAN.EthernetClass('10.10.10.52', 23, Model='SX20 TC7.3.X')
+Bridge = MediaPort.EthernetClass('10.10.10.53', 23, Model='MediaPort 200')
+Tesira = TesiraLAN.EthernetClass('192.168.10.150', 23, Model='TesiraFORTE CI')
+
 ## End User Import -------------------------------------------------------------
 ##
 ## Begin Device Definition -----------------------------------------------------
@@ -172,7 +177,7 @@ BtnVCP3      = Button(TLP, 163)
 BtnVCP4      = Button(TLP, 164)
 BtnVCP5      = Button(TLP, 165)
 BtnVCRecall  = Button(TLP, 166)
-BtnVCSave  = Button(TLP, 167)
+BtnVCSave    = Button(TLP, 167)
 ##
 BtnVCZoom1   = Button(TLP, 168, repeatTime = 0.1)
 BtnVCZoom2   = Button(TLP, 169, repeatTime = 0.1)
@@ -258,8 +263,9 @@ PageRecNav  = [BtnPause, BtnREC, BtnStop]
 ## Group VoIP
 PageTelCall = [BtnCall, BtnHangup]
 PageTelDial = [BtnDial0, BtnDial1, BtnDial2, BtnDial3, BtnDial4, BtnDial5,
-               BtnDial6, BtnDial7, BtnDial8, BtnDial9, BtnDialA, BtnDialG]
-PageTelOpt  = [BtnRedial, BtnDTMF, BtnHold, BtnDelete]
+               BtnDial6, BtnDial7, BtnDial8, BtnDial9,
+               BtnDialA, BtnDialG, BtnDelete]
+PageTelOpt  = [BtnRedial, BtnDTMF, BtnHold]
 ## Group Audio
 PageAudio1  = [BtnXHDMI, BtnXVGA, BtnXShare]
 PageAudio2  = [BtnXSpkLess, BtnXSpkPlus, BtnXVCLess, BtnXVCPlus]
@@ -269,6 +275,8 @@ ButtonEventList = ['Pressed', 'Released', 'Held', 'Repeated', 'Tapped']
 ## End Communication Interface Definition --------------------------------------
 
 def Initialize():
+    #--
+    Tesira.Connect()
     #--
     global PTZ_Status
     global VC_Status
@@ -284,13 +292,55 @@ def Initialize():
     VC_Status['Dial'] = ''
     LblVCDial.SetText('')
     #--
+    global dialerVI
+    dialerVI = []
+    VI_Status['Dial'] = ''
+    LblDial.SetText('')
+    #--
     TLP.HideAllPopups()
     TLP.ShowPage('Index')
+    #--
+    Tesira.SubscribeStatus('ConnectionStatus',None, TesiraConexStatus)
+    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'lvl_spk','Channel':'1'}, TesiraMute1Status)
+    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'lvl_vcrx','Channel':'1'}, TesiraMute2Status)
+    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'mute_mix','Channel':'1'}, TesiraMute3Status)
     #--
     print('System Inicializate')
     pass
 
 ## Data Dictionaries -----------------------------------------------------------
+def TesiraConexStatus(command,value,qualifier):
+    if value == 'Connected':
+        Audio_Status['Conex'] = 'Connected'
+        BtnLANTesira.SetState(1)
+    elif value == 'Disconnected':
+        Audio_Status['Conex'] = 'Disconnected'
+        BtnLANTesira.SetState(0)
+
+def TesiraMute1Status(command,value,qualifier):
+    if value == 'On':
+        Audio_Status['Mute_Spk'] = 'On'
+        BtnXSpk.SetState(1)
+    elif value == 'Off':
+        Audio_Status['Mute_Spk'] = 'Off'
+        BtnXSpk.SetState(0)
+
+def TesiraMute2Status(command,value,qualifier):
+    if value == 'On':
+        Audio_Status['Mute_VCRx'] = 'On'
+        BtnXVC.SetState(1)
+    elif value == 'Off':
+        Audio_Status['Mute_VCRx'] = 'Off'
+        BtnXVC.SetState(0)
+
+def TesiraMute3Status(command,value,qualifier):
+    if value == 'On':
+        Audio_Status['Mute_Mics'] = 'On'
+        BtnXMics.SetState(1)
+    elif value == 'Off':
+        Audio_Status['Mute_Mics'] = 'Off'
+        BtnXMics.SetState(0)
+        
 PTZ_Status = {
     'Preset_Mode' : '',
     'Power'       : '',
@@ -299,7 +349,16 @@ VC_Status = {
     'Dial'        : '',
     'Preset_Mode' : '',
     'Camera'      : '',
-    'Power'       : '',
+    'Power'       : ''
+}
+VI_Status = {
+    'Dial' : ''
+}
+Audio_Status = {
+    'Conex'     : '',
+    'Mute_Spk'  : '',
+    'Mute_VCRx' : '',
+    'Mute_Mics' : ''
 }
 ## Event Definitions -----------------------------------------------------------
 @event(BtnIndex,'Pressed')
@@ -311,6 +370,7 @@ def IndexEvents(button, state):
 ## Page Main -------------------------------------------------------------------
 @event(PageMain, ButtonEventList)
 def MainEvents(button, state):
+    #--
     if button is BtnVideo and state == 'Pressed':
         TLP.ShowPopup('Video')
         LblMode.SetText('Selección de Video')
@@ -343,6 +403,9 @@ def MainEvents(button, state):
         print('Touch Mode: %s' % 'Audio')
     #--
     elif button is BtnStatus and state == 'Pressed':
+        #--
+        print('Conex in Dictionary: ' + Audio_Status['Conex'])
+        #--
         TLP.ShowPopup('Status')
         LblMode.SetText('Información de Dispositivos')
         print('Touch Mode: %s' % 'Status')
@@ -882,54 +945,50 @@ def RecEventsNav(button, state):
     pass
 ## Page VoIP -------------------------------------------------------------------
 @event(PageTelCall, ButtonEventList)
-def VCCallEvents(button, state):
+def VICallEvents(button, state):
     if button is BtnCall and state == 'Pressed':
         print('Button Pressed - VoIP: %s' % 'Call')
     elif button is BtnHangup and state == 'Pressed':
         print('Button Pressed - VoIP: %s' % 'Hangup')
     pass
 
+def DialerVoIP(btn_name):
+    def CleanDialer():            #Function for clean the added/removed data
+        Clean = "".join(dialerVI) #Convert the list to a string
+        LblDial.SetText(Clean)    #Show the cleaned data into the GUI Label
+        VI_Status['Dial'] = Clean #Asign the final data to the data dictionaire
+        print(VI_Status['Dial'])  #Notifiy to console
+    #--
+    if btn_name == 'Delete':      #If the user push 'Delete' button
+        if len(dialerVI) <= 0:    #If the Dialer is Null
+            print('Null VC Dial') #Notify to console
+        else:                     #If the Dialer have any data
+            dialerVI.pop()        #Remove the last character
+            CleanDialer()         #Recall a clean data function
+    else:                         #If the user push a [*#0-9] button
+        Number = str(btn_name[4]) #Extract the valid character of btn name
+        dialerVI.append(Number)   #Append this valid character
+        CleanDialer()             #Recall a clean data function
+    pass
+
 @event(PageTelDial, ButtonEventList)
-def VCDialEvents(button, state):
-    if button is BtnDial0 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 0')
-    elif button is BtnDial1 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 1')
-    elif button is BtnDial2 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 2')
-    elif button is BtnDial3 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 3')
-    elif button is BtnDial4 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 4')
-    elif button is BtnDial5 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 5')
-    elif button is BtnDial6 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 6')
-    elif button is BtnDial7 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 7')
-    elif button is BtnDial8 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 8')
-    elif button is BtnDial9 and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial 9')
-    elif button is BtnDialA and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial *')
-    elif button is BtnDialG and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Dial #')
+def VIDialEvents(button, state):
+    if state == 'Pressed' or state == 'Repeated':
+        print('Button Pressed - VoIP: %s' % button.Name)
+        DialerVoIP(button.Name) #Recall a validation function
+        button.SetState(1)
+    else:
+        button.SetState(0)
     pass
 
 @event(PageTelOpt, ButtonEventList)
-def VCOptEvents(button, state):
+def VIOptEvents(button, state):
     if button is BtnRedial and state == 'Pressed':
         print('Button Pressed - VoIP: %s' % 'Redial')
     elif button is BtnDTMF and state == 'Pressed':
         print('Button Pressed - VoIP: %s' % 'DTMF')
     elif button is BtnHold and state == 'Pressed':
         print('Button Pressed - VoIP: %s' % 'Hold/Resume')
-    #--
-    elif button is BtnDelete and state == 'Pressed':
-        print('Button Pressed - VoIP: %s' % 'Delete')
-    elif button is BtnDelete and state == 'Repeated':
-        print('Button Repeated - VoIP: %s' % 'Delete')
     pass
 ## Page Audio ------------------------------------------------------------------
 @event(PageAudio1, ButtonEventList)
@@ -971,10 +1030,33 @@ def AudioVolEvents(button, state):
 @event(PageAudio3, ButtonEventList)
 def AudioMuteEvents(button, state):
     if button is BtnXSpk and state == 'Pressed':
+        print('Mute Spk Dictionary: ' + Audio_Status['Mute_Spk'])
+        if Audio_Status['Mute_Spk'] == 'On':
+            Tesira.Set('MuteControl','Off',{'Instance Tag':'lvl_spk','Channel':'1'})
+        elif Audio_Status['Mute_Spk'] == 'Off':
+            Tesira.Set('MuteControl','On',{'Instance Tag':'lvl_spk','Channel':'1'})
+        else:
+            Tesira.Update('MuteControl',{'Instance Tag':'lvl_spk','Channel':'1'})
         print('Button Pressed - Audio: %s' % 'Mute Spk')
+    #--
     elif button is BtnXVC and state == 'Pressed':
+        print('Mute VC.Rx Dictionary: ' + Audio_Status['Mute_VCRx'])
+        if Audio_Status['Mute_VCRx'] == 'On':
+            Tesira.Set('MuteControl','Off',{'Instance Tag':'lvl_vcrx','Channel':'1'})
+        elif Audio_Status['Mute_VCRx'] == 'Off':
+            Tesira.Set('MuteControl','On',{'Instance Tag':'lvl_vcrx','Channel':'1'})
+        else:
+            Tesira.Update('MuteControl',{'Instance Tag':'lvl_vcrx','Channel':'1'})
         print('Button Pressed - Audio: %s' % 'Mute VC')
+    #--
     elif button is BtnXMics and state == 'Pressed':
+        print('Mute Mix Dictionary: ' + Audio_Status['Mute_Mics'])
+        if Audio_Status['Mute_Mics'] == 'On':
+            Tesira.Set('MuteControl','Off',{'Instance Tag':'mute_mix','Channel':'1'})
+        elif Audio_Status['Mute_Mics'] == 'Off':
+            Tesira.Set('MuteControl','On',{'Instance Tag':'mute_mix','Channel':'1'})
+        else:
+            Tesira.Update('MuteControl',{'Instance Tag':'mute_mix','Channel':'1'})
         print('Button Pressed - Audio: %s' % 'Mute Mics')
     pass
 ## Page Status -----------------------------------------------------------------
