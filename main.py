@@ -199,6 +199,7 @@ BtnXSpkPlus  = Button(TLP, 192, repeatTime = 0.1)
 BtnXVCLess   = Button(TLP, 193, repeatTime = 0.1)
 BtnXVCPlus   = Button(TLP, 194, repeatTime = 0.1)
 LevelSpk     = Level(TLP, 195)
+LevelSpk.SetRange(-100, 12, 1)
 LevelVC      = Level(TLP, 196)
 ##
 BtnXSpk      = Button(TLP, 197)
@@ -304,6 +305,7 @@ def Initialize():
     Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'lvl_spk','Channel':'1'}, TesiraMute1Status)
     Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'lvl_vcrx','Channel':'1'}, TesiraMute2Status)
     Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'mute_mix','Channel':'1'}, TesiraMute3Status)
+    Tesira.SubscribeStatus('LevelControl',{'Instance Tag':'lvl_spk','Channel':'1'}, TesiraLevelStatus)
     #--
     print('System Inicializate')
     pass
@@ -340,7 +342,12 @@ def TesiraMute3Status(command,value,qualifier):
     elif value == 'Off':
         Audio_Status['Mute_Mics'] = 'Off'
         BtnXMics.SetState(0)
-        
+
+def TesiraLevelStatus(command,value,qualifier):
+    LevelSpk.SetLevel(value)
+    print(value)
+    Audio_Status['Lvl_Spk'] = value
+       
 PTZ_Status = {
     'Preset_Mode' : '',
     'Power'       : '',
@@ -358,7 +365,8 @@ Audio_Status = {
     'Conex'     : '',
     'Mute_Spk'  : '',
     'Mute_VCRx' : '',
-    'Mute_Mics' : ''
+    'Mute_Mics' : '',
+    'Lvl_Spk'   : 0,
 }
 ## Event Definitions -----------------------------------------------------------
 @event(BtnIndex,'Pressed')
@@ -1006,15 +1014,25 @@ def AudioSourceEvents(button, state):
     
 @event(PageAudio2, ButtonEventList)
 def AudioVolEvents(button, state):
-    if button is BtnXSpkLess and state == 'Pressed':
-        print('Button Pressed - Audio: %s' % 'Spk-')
-    elif button is BtnXSpkLess and state == 'Repeated':
-        print('Button Repeated - Audio: %s' % 'Spk-')
+    if button is BtnXSpkLess:
+        if state == 'Pressed' or state == 'Repeated':
+            BtnXSpkLess.SetState(1)
+            Audio_Status['Lvl_Spk'] -= 5
+            Tesira.Set('LevelControl',Audio_Status['Lvl_Spk'],{'Instance Tag':'lvl_spk','Channel':'1'})
+            LevelSpk.SetLevel(Audio_Status['Lvl_Spk'])
+            print('Audio: %s' % 'Spk+')
+        else:
+            BtnXSpkLess.SetState(0)
     #--
-    elif button is BtnXSpkPlus and state == 'Pressed':
-        print('Button Pressed - Audio: %s' % 'Spk+')
-    elif button is BtnXSpkPlus and state == 'Repeated':
-        print('Button Repeated - Audio: %s' % 'Spk+')
+    elif button is BtnXSpkPlus:
+        if state == 'Pressed' or state == 'Repeated':
+            BtnXSpkPlus.SetState(1)
+            Audio_Status['Lvl_Spk'] += 5
+            Tesira.Set('LevelControl',Audio_Status['Lvl_Spk'],{'Instance Tag':'lvl_spk','Channel':'1'})
+            LevelSpk.SetLevel(Audio_Status['Lvl_Spk'])
+            print('Audio: %s' % 'Spk+')
+        else:
+            BtnXSpkPlus.SetState(0)
     #--
     elif button is BtnXVCLess and state == 'Pressed':
         print('Button Pressed - Audio: %s' % 'VC-')
@@ -1029,6 +1047,7 @@ def AudioVolEvents(button, state):
     
 @event(PageAudio3, ButtonEventList)
 def AudioMuteEvents(button, state):
+    #--
     if button is BtnXSpk and state == 'Pressed':
         print('Mute Spk Dictionary: ' + Audio_Status['Mute_Spk'])
         if Audio_Status['Mute_Spk'] == 'On':
