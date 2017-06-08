@@ -547,12 +547,8 @@ def DialerVC(btn_name):
 
 @event(PageVCDial, ButtonEventList)
 def VCDialEvents(button, state):
-    if state == 'Pressed':
+    if state == 'Pressed' or state == 'Repeated':
         print('Button Pressed - VC: %s' % button.Name)
-        DialerVC(button.Name) #Recall a validation function
-        button.SetState(1)
-    if state == 'Repeated':
-        print('Button Repeat  - VC: %s' % button.Name)
         DialerVC(button.Name) #Recall a validation function
         button.SetState(1)
     else:
@@ -603,74 +599,108 @@ def VCNavEvents(button, state):
     if button is BtnVCUp:
         if state == 'Pressed' or state == 'Repeated':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraTiltSX20','Up',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Up')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraPan/Tilt','Up')
                 print('Cam Remota - Cisco: %s' % 'Cam Up')
+        #--
         elif state == 'Released':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraTiltSX20','Stop',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Stop')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraPan/Tilt','Stop')
                 print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
     elif button is BtnVCLeft:
         if state == 'Pressed' or state == 'Repeated':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraPanSX20','Left',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Left')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraPan/Tilt','Left')
                 print('Cam Remota - Cisco: %s' % 'Cam Left')
+        #--
         elif state == 'Released':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraPanSX20','Stop',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Stop')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraPan/Tilt','Stop')
                 print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
     elif button is BtnVCDown:
         if state == 'Pressed' or state == 'Repeated':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraTiltSX20','Down',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Down')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraPan/Tilt','Down')
                 print('Cam Remota - Cisco: %s' % 'Cam Down')
+        #--
         elif state == 'Released':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraTiltSX20','Stop',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Stop')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraPan/Tilt','Stop')
                 print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
     elif button is BtnVCRight:
         if state == 'Pressed' or state == 'Repeated':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraPanSX20','Right',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Right')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraPan/Tilt','Right')
                 print('Cam Remota - Cisco: %s' % 'Cam Right')
+        #--
         elif state == 'Released':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraPanSX20','Stop',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Stop')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraPan/Tilt','Stop')
                 print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
-    elif button is BtnVCZoom1:
+    elif button is BtnVCZoom1: #+
         if state == 'Pressed' or state == 'Repeated':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraZoomSX20','In',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Zoom+')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraZoom','In')
                 print('Cam Remota - Cisco: %s' % 'Cam Zoom+')
+            BtnVCZoom1.SetState(1)
+        #--
         elif state == 'Released':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraZoomSX20','Stop',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Stop')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraZoom','Stop')
                 print('Cam Remota - Cisco: %s' % 'Cam Stop')
+            BtnVCZoom1.SetState(0)
     #--
-    elif button is BtnVCZoom2:
+    elif button is BtnVCZoom2: #-
         if state == 'Pressed' or state == 'Repeated':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraZoomSX20','Out',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Zoom-')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraZoom','Out')
                 print('Cam Remota - Cisco: %s' % 'Cam Zoom-')
+            BtnVCZoom2.SetState(1)
+        #--
         elif state == 'Released':
             if VC_Status['Camera'] == 'Local':
+                Cisco.Set('CameraZoomSX20','Stop',{'Speed':7})
                 print('Cam Local - Cisco: %s' % 'Cam Stop')
             elif VC_Status['Camera'] == 'Remote':
+                Cisco.Set('FarEndCameraZoom','Stop')
                 print('Cam Remota - Cisco: %s' % 'Cam Stop')
+            BtnVCZoom2.SetState(0)
     #--
     if button is BtnVCLocal and state == 'Pressed':
         VC_Status['Camera'] = 'Local'
@@ -689,61 +719,86 @@ def VCCamEvents(button, state):
     if button is BtnVCP1 and state == 'Pressed':
         if VC_Status['Camera'] == 'Local':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('CameraPresetPositionRecallSX20','1')
                 print('Recall Local Preset Cisco: %s' % '1')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('CameraPresetSaveSX20','1')
                 print('Save Local Preset Cisco: %s' % '1')
+        #--
         elif VC_Status['Camera'] == 'Remote':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('FarEndCameraPresetRecall','1')
                 print('Recall Remote Preset Cisco: %s' % '1')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('FarEndCameraPresetSave','1')
                 print('Save Remote Preset Cisco: %s' % '1')
     #--
     elif button is BtnVCP2 and state == 'Pressed':
         if VC_Status['Camera'] == 'Local':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('CameraPresetPositionRecallSX20','2')
                 print('Recall Local Preset Cisco: %s' % '2')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('CameraPresetSaveSX20','2')
                 print('Save Local Preset Cisco: %s' % '2')
+        #--
         elif VC_Status['Camera'] == 'Remote':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('FarEndCameraPresetRecall','2')
                 print('Recall Remote Preset Cisco: %s' % '2')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('FarEndCameraPresetSave','2')
                 print('Save Remote Preset Cisco: %s' % '2')
     #--
     elif button is BtnVCP3 and state == 'Pressed':
         if VC_Status['Camera'] == 'Local':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('CameraPresetPositionRecallSX20','3')
                 print('Recall Local Preset Cisco: %s' % '3')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('CameraPresetSaveSX20','3')
                 print('Save Local Preset Cisco: %s' % '3')
+        #--
         elif VC_Status['Camera'] == 'Remote':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('FarEndCameraPresetRecall','3')
                 print('Recall Remote Preset Cisco: %s' % '3')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('FarEndCameraPresetSave','3')
                 print('Save Remote Preset Cisco: %s' % '3')
     #--
     elif button is BtnVCP4 and state == 'Pressed':
         if VC_Status['Camera'] == 'Local':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('CameraPresetPositionRecallSX20','4')
                 print('Recall Local Preset Cisco: %s' % '4')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('CameraPresetSaveSX20','4')
                 print('Save Local Preset Cisco: %s' % '4')
+        #--
         elif VC_Status['Camera'] == 'Remote':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('FarEndCameraPresetRecall','4')
                 print('Recall Remote Preset Cisco: %s' % '4')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('FarEndCameraPresetSave','4')
                 print('Save Remote Preset Cisco: %s' % '4')
     #--
     elif button is BtnVCP5 and state == 'Pressed':
         if VC_Status['Camera'] == 'Local':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('CameraPresetPositionRecallSX20','5')
                 print('Recall Local Preset Cisco: %s' % '5')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('CameraPresetSaveSX20','5')
                 print('Save Local Preset Cisco: %s' % '5')
+        #--
         elif VC_Status['Camera'] == 'Remote':
             if VC_Status['Preset_Mode'] == 'Recall':
+                Cisco.Set('FarEndCameraPresetRecall','5')
                 print('Recall Remote Preset Cisco: %s' % '5')
             elif VC_Status['Preset_Mode'] == 'Save':
+                Cisco.Set('FarEndCameraPresetSave','5')
                 print('Save Remote Preset Cisco: %s' % '5')
     #--
     elif button is BtnVCRecall and state == 'Pressed':
