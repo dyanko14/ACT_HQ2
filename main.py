@@ -15,9 +15,11 @@ print(Version())
 ## Begin User Import -----------------------------------------------------------
 import extr_matrix_DXPHD4k_Series_v1_1_1_0 as MatrixLAN
 import extr_sm_SMP_300_Series_v1_8_0_1 as SMP351LAN
+import csco_vtc_SX_Series_TC73_v1_3_0_0 as CiscoLAN
 #--
 Matrix = MatrixLAN.EthernetClass('10.10.10.50', 23, Model='DXP 44 HD 4k')
 SMP351 = SMP351LAN.EthernetClass('10.10.10.51', 23, Model='SMP 351')
+Cisco  = CiscoLAN.EthernetClass('10.10.10.52', 23, Model='SX20 TC7.3.X')
 ## End User Import -------------------------------------------------------------
 ##
 ## Begin Device Definition -----------------------------------------------------
@@ -237,8 +239,8 @@ GroupPTZ    = MESet([BtnRecall, BtnSave])
 PageVCCall  = [BtnVCCall, BtnVCHangup]
 PageVCDial  = [BtnVCDial0, BtnVCDial1, BtnVCDial2, BtnVCDial3, BtnVCDial4,
                BtnVCDial5, BtnVCDial6, BtnVCDial7, BtnVCDial8, BtnVCDial9,
-               BtnVCDialA, BtnVCDialG]
-PageVCOpt   = [BtnVCEnviar, BtnVCCamara, BtnVCAutoAn, BtnVCDelete]
+               BtnVCDialA, BtnVCDialG, BtnVCDelete]
+PageVCOpt   = [BtnVCEnviar, BtnVCCamara, BtnVCAutoAn]
 PageVCShare = [BtnVCHDMI, BtnVCVGA, BtnVCPTZ, BtnVCShare, BtnVCBack2,
                BtnVCSend, BtnVCStop]
 PageVCCamN  = [BtnVCZoom1, BtnVCZoom2, BtnVCUp, BtnVCLeft, BtnVCDown,
@@ -274,8 +276,18 @@ def Initialize():
     VC_Status['Camera'] = 'Local'
     GroupVCPTZ.SetCurrent(BtnVCRecall)
     GroupVCCam.SetCurrent(BtnVCLocal)
+    #
+    GroupMain.SetCurrent(None)
     #--
+    global dialerVC
+    dialerVC = []
+    VC_Status['Dial'] = ''
+    LblVCDial.SetText('')
+    #--
+    TLP.HideAllPopups()
     TLP.ShowPage('Index')
+    #--
+    print('System Inicializate')
     pass
 
 ## Data Dictionaries -----------------------------------------------------------
@@ -284,6 +296,7 @@ PTZ_Status = {
     'Power'       : '',
 }
 VC_Status = {
+    'Dial'        : '',
     'Preset_Mode' : '',
     'Camera'      : '',
     'Power'       : '',
@@ -506,37 +519,44 @@ def PTZEvents2(button, state):
 @event(PageVCCall, ButtonEventList)
 def VCCallEvents(button, state):
     if button is BtnVCCall and state == 'Pressed':
+        Cisco.Set('Hook','Dial',{'Protocol':'H323','Number': VC_Status['Dial']})
         print('Button Pressed - VC: %s' % 'Call')
     elif button is BtnVCHangup and state == 'Pressed':
+        Cisco.Set('Hook','Disconnect All',{'Protocol':'H323'})
         print('Button Pressed - VC: %s' % 'Hangup')
+    pass
+
+def DialerVC(btn_name):
+    def CleanDialer():            #Function for clean the added/removed data
+        Clean = "".join(dialerVC) #Convert the list to a string
+        LblVCDial.SetText(Clean)  #Show the cleaned data into the GUI Label
+        VC_Status['Dial'] = Clean #Asign the final data to the data dictionaire
+        print(VC_Status['Dial'])  #Notifiy to console
+    #--
+    if btn_name == 'Delete':      #If the user push 'Delete' button
+        if len(dialerVC) <= 0:    #If the Dialer is Null
+            print('Null VC Dial') #Notify to console
+        else:                     #If the Dialer have any data
+            dialerVC.pop()        #Remove the last character
+            CleanDialer()         #Recall a clean data function
+    else:                         #If the user push a [*#0-9] button
+        Number = str(btn_name[4]) #Extract the valid character of btn name
+        dialerVC.append(Number)   #Append this valid character
+        CleanDialer()             #Recall a clean data function
     pass
 
 @event(PageVCDial, ButtonEventList)
 def VCDialEvents(button, state):
-    if button is BtnVCDial0 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 0')
-    elif button is BtnVCDial1 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 1')
-    elif button is BtnVCDial2 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 2')
-    elif button is BtnVCDial3 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 3')
-    elif button is BtnVCDial4 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 4')
-    elif button is BtnVCDial5 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 5')
-    elif button is BtnVCDial6 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 6')
-    elif button is BtnVCDial7 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 7')
-    elif button is BtnVCDial8 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 8')
-    elif button is BtnVCDial9 and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial 9')
-    elif button is BtnVCDialA and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial *')
-    elif button is BtnVCDialG and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Dial #')
+    if state == 'Pressed':
+        print('Button Pressed - VC: %s' % button.Name)
+        DialerVC(button.Name) #Recall a validation function
+        button.SetState(1)
+    if state == 'Repeated':
+        print('Button Repeat  - VC: %s' % button.Name)
+        DialerVC(button.Name) #Recall a validation function
+        button.SetState(1)
+    else:
+        button.SetState(0)
     pass
 
 @event(PageVCOpt, ButtonEventList)
@@ -548,12 +568,8 @@ def VCOptEvents(button, state):
         TLP.ShowPopup('VC_Cam')
         print('Button Pressed - VC: %s' % 'Camera')
     elif button is BtnVCAutoAn and state == 'Pressed':
+        Cisco.Set('AutoAnswer','On')
         print('Button Pressed - VC: %s' % 'AutoAnswer')
-    #--
-    elif button is BtnVCDelete and state == 'Pressed':
-        print('Button Pressed - VC: %s' % 'Delete')
-    elif button is BtnVCDelete and state == 'Repeated':
-        print('Button Repeated - VC: %s' % 'Delete')
     pass
 ## Page VC Content -------------------------------------------------------------
 @event(PageVCShare, ButtonEventList)
@@ -574,55 +590,87 @@ def VCCamEvents(button, state):
         TLP.ShowPopup('VC')
         print('Button Pressed - VC Share: %s' % 'Back')
     elif button is BtnVCSend and state == 'Pressed':
+        Cisco.Set('Presentation','1') #Share Grahpics
         print('Button Pressed - VC Share: %s' % 'Send')
     elif button is BtnVCStop and state == 'Pressed':
+        Cisco.Set('Presentation','Stop')
         print('Button Pressed - VC Share: %s' % 'Stop')
     pass
 ## Page VC Camera --------------------------------------------------------------
 @event(PageVCCamN,ButtonEventList)
 def VCNavEvents(button, state):
     #--
-    if button is BtnVCUp and state == 'Pressed':
-        print('Button Pressed - Cisco: %s' % 'Cam Up')
-    elif button is BtnVCUp and state == 'Repeated':
-        print('Button Repeated - Cisco: %s' % 'Cam Up')
-    elif button is BtnVCUp and state == 'Released':
-        print('Button Relased - Cisco: %s' % 'Cam Up - Stop')
+    if button is BtnVCUp:
+        if state == 'Pressed' or state == 'Repeated':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Up')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Up')
+        elif state == 'Released':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Stop')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
-    elif button is BtnVCLeft and state == 'Pressed':
-        print('Button Pressed - Cisco: %s' % 'Cam Left')
-    elif button is BtnVCLeft and state == 'Repeated':
-        print('Button Repeated - Cisco: %s' % 'Cam Left')
-    elif button is BtnVCLeft and state == 'Released':
-        print('Button Relased - Cisco: %s' % 'Cam Left - Stop')
+    elif button is BtnVCLeft:
+        if state == 'Pressed' or state == 'Repeated':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Left')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Left')
+        elif state == 'Released':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Stop')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
-    elif button is BtnVCDown and state == 'Pressed':
-        print('Button Pressed - Cisco: %s' % 'Cam Down')
-    elif button is BtnVCDown and state == 'Repeated':
-        print('Button Repeated - Cisco: %s' % 'Cam Down')
-    elif button is BtnVCDown and state == 'Released':
-        print('Button Relased - Cisco: %s' % 'Cam Down - Stop')
+    elif button is BtnVCDown:
+        if state == 'Pressed' or state == 'Repeated':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Down')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Down')
+        elif state == 'Released':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Stop')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
-    elif button is BtnVCRight and state == 'Pressed':
-        print('Button Pressed - Cisco: %s' % 'Cam Right')
-    elif button is BtnVCRight and state == 'Repeated':
-        print('Button Repeated - Cisco: %s' % 'Cam Right')
-    elif button is BtnVCRight and state == 'Released':
-        print('Button Relased - Cisco: %s' % 'Cam Right - Stop')
+    elif button is BtnVCRight:
+        if state == 'Pressed' or state == 'Repeated':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Right')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Right')
+        elif state == 'Released':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Stop')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
-    elif button is BtnVCZoom1 and state == 'Pressed':
-        print('Button Pressed - Cisco: %s' % 'Cam Zoom+')
-    elif button is BtnVCZoom1 and state == 'Repeated':
-        print('Button Repeated - Cisco: %s' % 'Cam Zoom+')
-    elif button is BtnVCZoom1 and state == 'Released':
-        print('Button Relased - Cisco: %s' % 'Cam Zoom+ - Stop')
+    elif button is BtnVCZoom1:
+        if state == 'Pressed' or state == 'Repeated':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Zoom+')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Zoom+')
+        elif state == 'Released':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Stop')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
-    elif button is BtnVCZoom2 and state == 'Pressed':
-        print('Button Pressed - Cisco: %s' % 'Cam Zoom-')
-    elif button is BtnVCZoom2 and state == 'Repeated':
-        print('Button Repeated - Cisco: %s' % 'Cam Zoom-')
-    elif button is BtnVCZoom2 and state == 'Released':
-        print('Button Relased - Cisco: %s' % 'Cam Zoom- - Stop')
+    elif button is BtnVCZoom2:
+        if state == 'Pressed' or state == 'Repeated':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Zoom-')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Zoom-')
+        elif state == 'Released':
+            if VC_Status['Camera'] == 'Local':
+                print('Cam Local - Cisco: %s' % 'Cam Stop')
+            elif VC_Status['Camera'] == 'Remote':
+                print('Cam Remota - Cisco: %s' % 'Cam Stop')
     #--
     if button is BtnVCLocal and state == 'Pressed':
         VC_Status['Camera'] = 'Local'
