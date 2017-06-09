@@ -300,53 +300,58 @@ def Initialize():
     TLP.HideAllPopups()
     TLP.ShowPage('Index')
     #--
-    Tesira.SubscribeStatus('ConnectionStatus',None, TesiraConexStatus)
-    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'lvl_spk','Channel':'1'}, TesiraMute1Status)
-    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'lvl_vcrx','Channel':'1'}, TesiraMute2Status)
-    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'mute_mix','Channel':'1'}, TesiraMute3Status)
-    Tesira.SubscribeStatus('LevelControl',{'Instance Tag':'lvl_spk','Channel':'1'}, TesiraLevelStatus)
+    Tesira.SubscribeStatus('ConnectionStatus',None, TesiraStatus)
+    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'lvl_spk','Channel':'1'}, TesiraStatus)
+    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'lvl_vcrx','Channel':'1'}, TesiraStatus)
+    Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'mute_mix','Channel':'1'}, TesiraStatus)
+    Tesira.SubscribeStatus('LevelControl',{'Instance Tag':'lvl_spk','Channel':'1'}, TesiraStatus)
+    #--
     #--
     print('System Inicializate')
     pass
 
 ## Data Dictionaries -----------------------------------------------------------
-def TesiraConexStatus(command,value,qualifier):
-    if value == 'Connected':
-        Audio_Status['Conex'] = 'Connected'
-        BtnLANTesira.SetState(1)
-    elif value == 'Disconnected':
-        Audio_Status['Conex'] = 'Disconnected'
-        BtnLANTesira.SetState(0)
+def TesiraStatus(command,value,qualifier):
+    #--
+    if command == 'ConnectionStatus':
+        if value == 'Connected':
+            Audio_Status['Conex'] = 'Connected'
+            BtnLANTesira.SetState(1)
+        elif value == 'Disconnected':
+            Audio_Status['Conex'] = 'Disconnected'
+            BtnLANTesira.SetState(0)
+    #--
+    elif command == 'MuteControl':
+        if qualifier['Instance Tag'] == 'lvl_spk':
+            if value == 'On':
+                Audio_Status['Mute_Spk'] = 'On'
+                BtnXSpk.SetState(1)
+            elif value == 'Off':
+                Audio_Status['Mute_Spk'] = 'Off'
+                BtnXSpk.SetState(0)
+        #--
+        elif qualifier['Instance Tag'] == 'lvl_vcrx':
+            if value == 'On':
+                Audio_Status['Mute_VCRx'] = 'On'
+                BtnXVC.SetState(1)
+            elif value == 'Off':
+                Audio_Status['Mute_VCRx'] = 'Off'
+                BtnXVC.SetState(0)
+        #--
+        elif qualifier['Instance Tag'] == 'mute_mix':
+            if value == 'On':
+                Audio_Status['Mute_Mics'] = 'On'
+                BtnXMics.SetState(1)
+            elif value == 'Off':
+                Audio_Status['Mute_Mics'] = 'Off'
+                BtnXMics.SetState(0)
+    #--
+    elif command == 'LevelControl':
+        LevelSpk.SetLevel(value)
+        Audio_Status['Lvl_Spk'] = value
+        print(value)
+    pass
 
-def TesiraMute1Status(command,value,qualifier):
-    if value == 'On':
-        Audio_Status['Mute_Spk'] = 'On'
-        BtnXSpk.SetState(1)
-    elif value == 'Off':
-        Audio_Status['Mute_Spk'] = 'Off'
-        BtnXSpk.SetState(0)
-
-def TesiraMute2Status(command,value,qualifier):
-    if value == 'On':
-        Audio_Status['Mute_VCRx'] = 'On'
-        BtnXVC.SetState(1)
-    elif value == 'Off':
-        Audio_Status['Mute_VCRx'] = 'Off'
-        BtnXVC.SetState(0)
-
-def TesiraMute3Status(command,value,qualifier):
-    if value == 'On':
-        Audio_Status['Mute_Mics'] = 'On'
-        BtnXMics.SetState(1)
-    elif value == 'Off':
-        Audio_Status['Mute_Mics'] = 'Off'
-        BtnXMics.SetState(0)
-
-def TesiraLevelStatus(command,value,qualifier):
-    LevelSpk.SetLevel(value)
-    Audio_Status['Lvl_Spk'] = value
-    print(value)
-       
 PTZ_Status = {
     'Preset_Mode' : '',
     'Power'       : '',
@@ -366,6 +371,12 @@ Audio_Status = {
     'Mute_VCRx' : '',
     'Mute_Mics' : '',
     'Lvl_Spk'   : None,
+}
+Matrix_Status = {
+    'Conex' : '',
+    'Input' : '',
+    'Output': '',
+    'Type'  : '',
 }
 ## Event Definitions -----------------------------------------------------------
 @event(BtnIndex,'Pressed')
