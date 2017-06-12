@@ -136,7 +136,7 @@ BtnDialG     = Button(TLP, 111)
 BtnRedial    = Button(TLP, 112)
 BtnDTMF      = Button(TLP, 113)
 BtnHold      = Button(TLP, 114)
-BtnDelete    = Button(TLP, 115)
+BtnDelete    = Button(TLP, 115, repeatTime = 0.1)
 LblDial      = Label(TLP, 116)
 ## VC
 BtnVCCall    = Button(TLP, 131)
@@ -288,12 +288,12 @@ def Initialize():
     GroupMain.SetCurrent(None)
     #--
     global dialerVC
-    dialerVC = []
+    dialerVC = ''
     VC_Status['Dial'] = ''
     LblVCDial.SetText('')
     #--
     global dialerVI
-    dialerVI = []
+    dialerVI = ''
     VI_Status['Dial'] = ''
     LblDial.SetText('')
     #--
@@ -617,23 +617,20 @@ def VCCallEvents(button, state):
         print('Button Pressed - VC: %s' % 'Hangup')
     pass
 
+
 def DialerVC(btn_name):
-    def CleanDialer():            #Function for clean the added/removed data
-        Clean = "".join(dialerVC) #Convert the list to a string
-        LblVCDial.SetText(Clean)  #Show the cleaned data into the GUI Label
-        VC_Status['Dial'] = Clean #Asign the final data to the data dictionaire
-        print(VC_Status['Dial'])  #Notifiy to console
+    global dialerVC
+    #--    
+    if btn_name == 'Delete':         #If the user push 'Delete' button
+        dialerVC = dialerVC[:-1]     #Remove the last char of the string
+        VC_Status['Dial'] = dialerVC #Asign the string to the data dictionary
+        LblVCDial.SetText(dialerVC)  #Send the string to GUI Label
     #--
-    if btn_name == 'Delete':      #If the user push 'Delete' button
-        if len(dialerVC) <= 0:    #If the Dialer is Null
-            print('Null VC Dial') #Notify to console
-        else:                     #If the Dialer have any data
-            dialerVC.pop()        #Remove the last character
-            CleanDialer()         #Recall a clean data function
-    else:                         #If the user push a [*#0-9] button
-        Number = str(btn_name[4]) #Extract the valid character of btn name
-        dialerVC.append(Number)   #Append this valid character
-        CleanDialer()             #Recall a clean data function
+    else:                            #If the user push a [*#0-9] button
+        Number = str(btn_name[4])    #Extract the valid character of btn name
+        dialerVC += Number           #Append the last char to the string
+        VC_Status['Dial'] = dialerVC #Asign the string to the data dictionary
+        LblVCDial.SetText(dialerVC)  #Send the string to GUI Label
     pass
 
 @event(PageVCDial, ButtonEventList)
@@ -981,26 +978,23 @@ def VICallEvents(button, state):
     pass
 
 def DialerVoIP(btn_name):
-    def CleanDialer():            #Function for clean the added/removed data
-        Clean = "".join(dialerVI) #Convert the list to a string
-        LblDial.SetText(Clean)    #Show the cleaned data into the GUI Label
-        VI_Status['Dial'] = Clean #Asign the final data to the data dictionaire
-        print(VI_Status['Dial'])  #Notifiy to console
+    global dialerVI
     #--
-    if btn_name == 'Delete':      #If the user push 'Delete' button
-        if len(dialerVI) <= 0:    #If the Dialer is Null
-            print('Null VC Dial') #Notify to console
-        else:                     #If the Dialer have any data
-            dialerVI.pop()        #Remove the last character
-            CleanDialer()         #Recall a clean data function
-    else:                         #If the user push a [*#0-9] button
-        Number = str(btn_name[4]) #Extract the valid character of btn name
-        dialerVI.append(Number)   #Append this valid character
-        CleanDialer()             #Recall a clean data function
+    if btn_name == 'Delete':         #If the user push 'Delete' button
+        dialerVI = dialerVI[:-1]     #Remove the last char of the string
+        VI_Status['Dial'] = dialerVI #Asign the string to the data dictionary
+        LblDial.SetText(dialerVI)    #Send the string to GUI Label
+    #--
+    else:                            #If the user push a [*#0-9] button
+        Number = str(btn_name[4])    #Extract the valid character of btn name
+        dialerVI += Number           #Append the last char to the string
+        VI_Status['Dial'] = dialerVI #Asign the string to the data dictionary
+        LblDial.SetText(dialerVI)    #Send the string to GUI Label
     pass
 
 @event(PageTelDial, ButtonEventList)
 def VIDialEvents(button, state):
+    print(state)
     if state == 'Pressed' or state == 'Repeated':
         print('Button Pressed - VoIP: %s' % button.Name)
         DialerVoIP(button.Name) #Recall a validation function
