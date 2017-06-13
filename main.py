@@ -363,7 +363,8 @@ VC_Status = {
     'Power'       : ''
 }
 VI_Status = {
-    'Dial' : ''
+    'Dial' : '',
+    'DTMF' : False
 }
 Audio_Status = {
     'Conex'     : '',
@@ -645,15 +646,27 @@ def VCDialEvents(button, state):
 
 @event(PageVCOpt, ButtonEventList)
 def VCOptEvents(button, state):
+    #--
     if button is BtnVCEnviar and state == 'Pressed':
         TLP.ShowPopup('VC_Content')
+        BtnVCEnviar.SetState(1)
         print('Button Pressed - VC: %s' % 'Content')
-    elif button is BtnVCCamara and state == 'Pressed':
+    else:
+        BtnVCEnviar.SetState(0)
+    #--
+    if button is BtnVCCamara and state == 'Pressed':
         TLP.ShowPopup('VC_Cam')
+        BtnVCCamara.SetState(1)
         print('Button Pressed - VC: %s' % 'Camera')
-    elif button is BtnVCAutoAn and state == 'Pressed':
+    else:
+        BtnVCCamara.SetState(0)
+    #--
+    if button is BtnVCAutoAn and state == 'Pressed':
         Cisco.Set('AutoAnswer','On')
+        BtnVCAutoAn.SetState(1)
         print('Button Pressed - VC: %s' % 'AutoAnswer')
+    else:
+        BtnVCAutoAn.SetState(0)
     pass
 ## Page VC Content -------------------------------------------------------------
 @event(PageVCShare, ButtonEventList)
@@ -971,9 +984,13 @@ def RecEventsNav(button, state):
 ## Page VoIP -------------------------------------------------------------------
 @event(PageTelCall, ButtonEventList)
 def VICallEvents(button, state):
+    #--
     if button is BtnCall and state == 'Pressed':
+        Tesira.Set('VoIPHook','Dial',{'Instance Tag':'Dialer','Line':'1','Call Appearance':'1','Number':VI_Status['Dial']})
         print('Button Pressed - VoIP: %s' % 'Call')
+    #--
     elif button is BtnHangup and state == 'Pressed':
+        Tesira.Set('VoIPHook','End',{'Instance Tag':'Dialer','Line':'1','Call Appearance':'1'})
         print('Button Pressed - VoIP: %s' % 'Hangup')
     pass
 
@@ -985,11 +1002,14 @@ def DialerVoIP(btn_name):
         VI_Status['Dial'] = dialerVI #Asign the string to the data dictionary
         LblDial.SetText(dialerVI)    #Send the string to GUI Label
     #--
-    else:                            #If the user push a [*#0-9] button
-        Number = str(btn_name[4])    #Extract the valid character of btn name
-        dialerVI += Number           #Append the last char to the string
-        VI_Status['Dial'] = dialerVI #Asign the string to the data dictionary
-        LblDial.SetText(dialerVI)    #Send the string to GUI Label
+    else:                                #If the user push a [*#0-9] button
+        Number = str(btn_name[4])        #Extract the valid character of btn name
+        if VI_Status['DTMF'] == False:   #If the DTMF is off
+            dialerVI += Number           #Append the last char to the string
+            VI_Status['Dial'] = dialerVI #Asign the string to the data dictionary
+            LblDial.SetText(dialerVI)    #Send the string to GUI Label
+        elif VI_Status['DTMF'] == True:  #If DTMF is On
+            Tesira.Set('DTMF',Number,{'Instance Tag':'Dialer','Line':'1'})
     pass
 
 @event(PageTelDial, ButtonEventList)
@@ -1005,10 +1025,22 @@ def VIDialEvents(button, state):
 
 @event(PageTelOpt, ButtonEventList)
 def VIOptEvents(button, state):
+    #--
     if button is BtnRedial and state == 'Pressed':
+        Tesira.Set('VoIPHook','Redial',{'Instance Tag':'Dialer','Line':'1','Call Appearance':'1'})
         print('Button Pressed - VoIP: %s' % 'Redial')
+    #--
     elif button is BtnDTMF and state == 'Pressed':
+        if VI_Status['DTMF'] == False:
+            VI_Status['DTMF'] = True
+            BtnDTMF.SetState(1)
+            print('Button Pressed - VoIP: %s' % 'DTMF On')
+        elif VI_Status['DTMF'] == True:
+            VI_Status['DTMF'] = False:
+            BtnDTMF.SetState(0)
+            print('Button Pressed - VoIP: %s' % 'DTMF Off')
         print('Button Pressed - VoIP: %s' % 'DTMF')
+    #--
     elif button is BtnHold and state == 'Pressed':
         print('Button Pressed - VoIP: %s' % 'Hold/Resume')
     pass
