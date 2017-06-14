@@ -10,6 +10,13 @@ from extronlib.system import Clock, MESet, Wait
 
 print(Version())
 
+## Empresa     | Asesores y Consultores en Tecnología S.A. de C.V.
+## Programador | Dyanko Cisneros Mendoza
+## Cliente     | Human Quality
+## Proyecto    | Sala de Juntas
+## Versión     | 0.1
+
+
 ## End ControlScript Import ----------------------------------------------------
 ##
 ## Begin User Import -----------------------------------------------------------
@@ -260,6 +267,7 @@ PageWebex   = [BtnWHDMI, BtnWVGA, BtnWPTZ, BtnWShare, BtnWCisco1, BtnWCisco2]
 PageRecV    = [Btn4HDMI, Btn4VGA, Btn4PTZ, Btn4Share, Btn4Cisco1, Btn4Cisco2]
 PageRecA    = [Btn4Mic, Btn4VC, Btn4VoIP, Btn4PC]
 PageRecNav  = [BtnPause, BtnREC, BtnStop]
+GroupRec    = MESet(PageRecNav)
 ## Group VoIP
 PageTelCall = [BtnCall, BtnHangup]
 PageTelDial = [BtnDial0, BtnDial1, BtnDial2, BtnDial3, BtnDial4, BtnDial5,
@@ -306,6 +314,10 @@ def Initialize():
     Tesira.SubscribeStatus('MuteControl',{'Instance Tag':'mute_mix','Channel':'1'}, TesiraStatus)
     Tesira.SubscribeStatus('LevelControl',{'Instance Tag':'lvl_spk','Channel':'1'}, TesiraStatus)
     #--
+    SMP351.SubscribeStatus('Record',None,SMP351Status)
+    SMP351.SubscribeStatus('RecordDestination',None,SMP351Status)
+    SMP351.SubscribeStatus('RecordResolution',None,SMP351Status)
+    SMP351.SubscribeStatus('RecordingMode',None,SMP351Status)
     #--
     print('System Inicializate')
     pass
@@ -352,6 +364,37 @@ def TesiraStatus(command,value,qualifier):
         print(value)
     pass
 
+def SMP351Status(command,value,qualifier):
+    #--
+    if command == 'Record':
+        Rec_Status['Record'] = value
+        if value == 'Start':
+            print(Rec_Status['Record'])
+            GroupRec.SetCurrent(BtnREC)
+        elif value == 'Stop':
+            print(Rec_Status['Record'])
+            GroupRec.SetCurrent(BtnStop)
+        elif value == 'Pause':
+            print(Rec_Status['Record'])
+            GroupRec.SetCurrent(BtnPause)
+    #--
+    elif command == 'RecordDestination':
+        Rec_Status['Destination'] = value
+        print(Rec_Status['Destination'])
+    #--
+    elif command == 'RecordResolution':
+        LblRes.SetText(value)
+        print(value)
+    #--
+    elif command == 'RecordingMode':
+        if value == 'Audio and Video':
+            BtnRecAV.SetState(1)
+            BtnRecV.SetState(0)
+        elif value == 'Video Only':
+            BtnRecAV.SetState(0)
+            BtnRecV.SetState(1)
+    pass
+
 PTZ_Status = {
     'Preset_Mode' : '',
     'Power'       : '',
@@ -378,6 +421,12 @@ Matrix_Status = {
     'Input' : '',
     'Output': '',
     'Type'  : '',
+}
+Rec_Status = {
+    'Record'      : '',
+    'Destination' : '',
+    'Resolution'  : '',
+    'Mode'        : '',
 }
 ## Event Definitions -----------------------------------------------------------
 @event(BtnIndex,'Pressed')
@@ -617,7 +666,6 @@ def VCCallEvents(button, state):
         Cisco.Set('Hook','Disconnect All',{'Protocol':'H323'})
         print('Button Pressed - VC: %s' % 'Hangup')
     pass
-
 
 def DialerVC(btn_name):
     global dialerVC
@@ -1035,6 +1083,7 @@ def VIOptEvents(button, state):
             VI_Status['DTMF'] = True
             BtnDTMF.SetState(1)
             print('Button Pressed - VoIP: %s' % 'DTMF On')
+        #--
         elif VI_Status['DTMF'] == True:
             VI_Status['DTMF'] = False:
             BtnDTMF.SetState(0)
