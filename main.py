@@ -39,7 +39,8 @@ import biam_dsp_TesiraSeries_v1_5_19_0                as DeviceE
 import smfy_controller_RS485_RTS_Transmitter_v1_0_0_0 as DeviceF
 import shrp_display_PN_E603_E703_v1_0_2_0             as DeviceG
 import shrp_display_PN_E603_E703_v1_0_2_0_            as DeviceH
-
+## IR/Serial-controlled Modules declared:
+import shrp_display_PN_E603_E703_v1_0_2_0             as DeviceI
 ## IP-controlled Devices declared:
 Matrix   = DeviceA.EthernetClass('10.10.10.10', 23, Model='DXP 88 HD 4k')
 Bridge   = DeviceB.EthernetClass('10.10.10.11', 23, Model='MediaPort 200')
@@ -48,6 +49,8 @@ Cisco    = DeviceD.EthernetClass('10.10.10.13', 23, Model='SX20 TC7.3.X')
 Biamp    = DeviceE.EthernetClass('10.10.10.14', 23, Model='TesiraFORTE CI')
 ## Serial-controlled Devices declared:
 Somfy    = DeviceF.SerialClass(IPCP, 'COM1', Baud=9600, Model='RS485 RTS Transmitter')
+## IR/Serial-controlled Devices declared:
+LCD1     = DeviceI.SerialClass(IPCP, 'IRS1', Baud=9600, Model='PN-E603')
 ##
 ## End User Import -------------------------------------------------------------
 ## Begin Communication Interface Definition ------------------------------------
@@ -508,7 +511,7 @@ def MainEvents(button, state):
     elif button is BtnRec and state == 'Pressed':
         TLP.ShowPopup('Recording')
         LblMode.SetText('Control de Grabación')
-        SMP351.Set('RecordingMode','Audio and Video')
+        Recorder.Set('RecordingMode','Audio and Video')
         print('Touch Mode: %s' % 'Recording')
     #--
     elif button is BtnVoIP and state == 'Pressed':
@@ -1023,15 +1026,15 @@ def RecEventsA(button, state):
 def RecEventsNav(button, state):
     if button is BtnPause and state == 'Pressed':
         ## Pause the Recording
-        SMP351.Set('Record','Pause')
+        Recorder.Set('Record','Pause')
         print('Button Pressed - REC: %s' % 'Pause')
     elif button is BtnREC and state == 'Pressed':
         ## Start to Record
-        SMP351.Set('Record','Start')
+        Recorder.Set('Record','Start')
         print('Button Pressed - REC: %s' % 'Rec')
     elif button is BtnStop and state == 'Pressed':
         ## Stop the Recording
-        SMP351.Set('Record','Stop')
+        Recorder.Set('Record','Stop')
         print('Button Pressed - REC: %s' % 'Stop')
     pass
 
@@ -1127,7 +1130,8 @@ def AudioSourceEvents(button, state):
 def AudioVolEvents(button, state):
     ## Data of current Biamp Block Gain
     global currentlvl
-    currentlvl = Biamp_Data['Lvl_Spk']    
+    currentlvl = Biamp_Data['Lvl_Spk']
+
     ## Audio Speaker Control - Vol -
     if button is BtnXSpkLess:    
         if state == 'Pressed' or state == 'Repeated':
