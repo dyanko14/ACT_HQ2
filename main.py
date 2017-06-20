@@ -1,9 +1,9 @@
 ## -------------------------------------------------------------------------- ##
-## Empresa     | Asesores y Consultores en Tecnología S.A. de C.V. ---------- ##
-## Programador | Dyanko Cisneros Mendoza
-## Cliente     | Human Quality
-## Proyecto    | Sala de Juntas
-## Versión     | 0.1 -------------------------------------------------------- ##
+## Business   | Asesores y Consultores en Tecnología S.A. de C.V. ----------- ##
+## Programmer | Dyanko Cisneros Mendoza
+## Customer   | Human Quality
+## Project    | Meeting Room
+## Version    | 0.1 --------------------------------------------------------- ##
 
 ## Begin ControlScript Import --------------------------------------------------
 from extronlib import event, Version
@@ -32,25 +32,20 @@ TLP = UIDevice('TouchPanel')
 ## IP-controlled Modules declared:
 import extr_matrix_DXPHD4k_Series_v1_1_1_0            as DeviceA
 import extr_other_MediaPort200_v1_1_0_0               as DeviceB
-import extr_sm_SMP_300_Series_v1_8_0_1                as DeviceC
-import csco_vtc_SX_Series_TC73_v1_3_0_0               as DeviceD
-import biam_dsp_TesiraSeries_v1_5_19_0                as DeviceE
+import csco_vtc_SX_Series_TC73_v1_3_0_0               as DeviceC
+import biam_dsp_TesiraSeries_v1_5_19_0                as DeviceD
 ## Serial-controlled Modules declared:
-import smfy_controller_RS485_RTS_Transmitter_v1_0_0_0 as DeviceF
-import shrp_display_PN_E603_E703_v1_0_2_0             as DeviceG
-import shrp_display_PN_E603_E703_v1_0_2_0_            as DeviceH
+import smfy_controller_RS485_RTS_Transmitter_v1_0_0_0 as DeviceE
 ## IR/Serial-controlled Modules declared:
-import shrp_display_PN_E603_E703_v1_0_2_0             as DeviceI
 ## IP-controlled Devices declared:
 Matrix   = DeviceA.EthernetClass('10.10.10.10', 23, Model='DXP 88 HD 4k')
 Bridge   = DeviceB.EthernetClass('10.10.10.11', 23, Model='MediaPort 200')
-Recorder = DeviceC.EthernetClass('10.10.10.12', 23, Model='SMP 351')
-Cisco    = DeviceD.EthernetClass('10.10.10.13', 23, Model='SX20 TC7.3.X')
-Biamp    = DeviceE.EthernetClass('10.10.10.14', 23, Model='TesiraFORTE CI')
+Cisco    = DeviceC.EthernetClass('10.10.10.12', 23, Model='SX20 TC7.3.X')
+Biamp    = DeviceD.EthernetClass('10.10.10.13', 23, Model='TesiraFORTE CI')
 ## Serial-controlled Devices declared:
-Somfy    = DeviceF.SerialClass(IPCP, 'COM1', Baud=9600, Model='RS485 RTS Transmitter')
+Somfy    = DeviceE.SerialClass(IPCP, 'COM1', Baud=9600, Model='RS485 RTS Transmitter')
 ## IR/Serial-controlled Devices declared:
-LCD1     = DeviceI.SerialClass(IPCP, 'IRS1', Baud=9600, Model='PN-E603')
+
 ##
 ## End User Import -------------------------------------------------------------
 ## Begin Communication Interface Definition ------------------------------------
@@ -93,26 +88,6 @@ BtnWPTZ      = Button(TLP, 63)
 BtnWShare    = Button(TLP, 64)
 BtnWCisco1   = Button(TLP, 65)
 BtnWCisco2   = Button(TLP, 66)
-## Page Recording - Sources Control
-Btn4HDMI     = Button(TLP, 71)
-Btn4VGA      = Button(TLP, 72)
-Btn4PTZ      = Button(TLP, 73)
-Btn4Share    = Button(TLP, 74)
-Btn4Cisco1   = Button(TLP, 75)
-Btn4Cisco2   = Button(TLP, 76)
-## Page Recording - Mute Control
-Btn4Mic      = Button(TLP, 77)
-Btn4VC       = Button(TLP, 78)
-Btn4VoIP     = Button(TLP, 79)
-Btn4PC       = Button(TLP, 80)
-## Page Recording - Record Control
-BtnPause     = Button(TLP, 81)
-BtnREC       = Button(TLP, 82)
-BtnStop      = Button(TLP, 83)
-LblRes       = Label(TLP, 84)
-BtnRecAV     = Button(TLP, 85)
-BtnRecV      = Button(TLP, 86)
-LblElapsed   = Label(TLP, 87)
 ## Page VoIP - Dial Control
 BtnCall      = Button(TLP, 91)
 BtnHangup    = Button(TLP, 92)
@@ -217,9 +192,9 @@ Lbl1Vaddio   = Label(TLP, 222)
 Lbl2Vaddio   = Label(TLP, 223)
 Lbl3Vaddio   = Label(TLP, 224)
 ## Page Power
-BtnPowerAll  = Button(TLP, 250, holdTime = 3)
+BtnPowerAll  = Button(TLP, 250, repeatTime = 1)
 LblPowerAll  = Label(TLP, 251)
-
+LblCountAll  = Label(TLP, 252)
 ## Button Grouping -------------------------------------------------------------
 ## Group Page Main
 PageMain   = [BtnVideo, BtnVC, BtnWebex, BtnRec, BtnVoIP, 
@@ -249,11 +224,6 @@ GroupVCPTZ  = MESet([BtnVCRecall, BtnVCSave])
 GroupVCCam  = MESet([BtnVCLocal, BtnVCRemote])
 ## Group Popup Webex
 PageWebex   = [BtnWHDMI, BtnWVGA, BtnWPTZ, BtnWShare, BtnWCisco1, BtnWCisco2]
-## Group Popup REC
-PageRecV    = [Btn4HDMI, Btn4VGA, Btn4PTZ, Btn4Share, Btn4Cisco1, Btn4Cisco2]
-PageRecA    = [Btn4Mic, Btn4VC, Btn4VoIP, Btn4PC]
-PageRecNav  = [BtnPause, BtnREC, BtnStop]
-GroupRec    = MESet(PageRecNav)
 ## Group Popup VoIP
 PageTelCall = [BtnCall, BtnHangup]
 PageTelDial = [BtnDial0, BtnDial1, BtnDial2, BtnDial3, BtnDial4, BtnDial5,
@@ -273,6 +243,10 @@ def Initialize():
     ## Opening a new Connection Thread to all devices
     Biamp.Connect()
 
+    ## Power Page Counter Variable
+    global PwrCount
+    PwrCount = 0
+    
     ## Initialization of data and variables-----------
     ## Initialization in Cisco Camera Page
     Cisco_Data['PresetMode'] = 'Recall'
@@ -297,11 +271,6 @@ def Initialize():
     
     ## AV Bridge Subscribe Commands
     
-    ## Recorder Subscribe Commands
-    Recorder.SubscribeStatus('Record',None,Recorder_Parsing)
-    Recorder.SubscribeStatus('RecordDestination',None,Recorder_Parsing)
-    Recorder.SubscribeStatus('RecordResolution',None,Recorder_Parsing)
-    Recorder.SubscribeStatus('RecordingMode',None,Recorder_Parsing)
     ## Cisco Subscribe Commands
     Cisco.SubscribeStatus('CallStatus',{'Call':'1'},Cisco_Parsing)
     Cisco.SubscribeStatus('PresentationMode',None,Cisco_Parsing)
@@ -317,6 +286,7 @@ def Initialize():
     TLP.HideAllPopups()
     TLP.ShowPage('Index')
     GroupMain.SetCurrent(None) ##Turn Off all feedback button in GUI Main Page
+    LblCountAll.SetText('')
     
     ## Notify to Console
     print('System Inicializate')
@@ -331,37 +301,6 @@ def Initialize():
 # Please declare Matrix Data Function below
 
 # Please declare AV Bridge Data Function below
-
-def Recorder_Parsing(command,value,qualifier):
-    #--
-    if command == 'Record':
-        Recorder_Data['Record'] = value
-        if value == 'Start':
-            print(Recorder_Data['Record'])
-            GroupRec.SetCurrent(BtnREC)
-        elif value == 'Stop':
-            print(Recorder_Data['Record'])
-            GroupRec.SetCurrent(BtnStop)
-        elif value == 'Pause':
-            print(Recorder_Data['Record'])
-            GroupRec.SetCurrent(BtnPause)
-    #--
-    elif command == 'RecordDestination':
-        Recorder_Data['Destination'] = value
-        print(Recorder_Data['Destination'])
-    #--
-    elif command == 'RecordResolution':
-        LblRes.SetText(value)
-        print(value)
-    #--
-    elif command == 'RecordingMode':
-        if value == 'Audio and Video':
-            BtnRecAV.SetState(1)
-            BtnRecV.SetState(0)
-        elif value == 'Video Only':
-            BtnRecAV.SetState(0)
-            BtnRecV.SetState(1)
-    pass
 
 def Cisco_Parsing(command,value,qualifier):
     #--
@@ -437,13 +376,6 @@ Bridge_Data = {
     'Conex' : '',
 }
 
-Recorder_Data = {
-    'Destination' : '',
-    'Mode'        : '',
-    'Record'      : '',
-    'Resolution'  : '',
-}
-
 Cisco_Data = {
     'AutoAnswer' : '',
     'CallStatus' : '',
@@ -511,7 +443,6 @@ def MainEvents(button, state):
     elif button is BtnRec and state == 'Pressed':
         TLP.ShowPopup('Recording')
         LblMode.SetText('Control de Grabación')
-        Recorder.Set('RecordingMode','Audio and Video')
         print('Touch Mode: %s' % 'Recording')
     #--
     elif button is BtnVoIP and state == 'Pressed':
@@ -977,67 +908,6 @@ def WebexEvents(button, state):
         print('Button Pressed - Webex: %s' % 'Cisco 2')
     pass
 
-## Page Recording --------------------------------------------------------------
-@event(PageRecV, ButtonEventList)
-def RecEventsV(button, state):
-    if button is Btn4HDMI and state == 'Pressed':
-        ## HDMI to SMP351 Input - Video
-        Matrix.Set('MatrixTieCommand', None, {'Input':'1','Output':'4','Tie Type':'Video'})
-        print('Button Pressed - REC: %s' % 'HDMI')
-    elif button is Btn4VGA and state == 'Pressed':
-        ## VGA to SMP351 Input - Video
-        Matrix.Set('MatrixTieCommand', None, {'Input':'2','Output':'4','Tie Type':'Video'})
-        print('Button Pressed - REC: %s' % 'VGA')
-    elif button is Btn4PTZ and state == 'Pressed':
-        ## PTZ to SMP351 Input - Video
-        Matrix.Set('MatrixTieCommand', None, {'Input':'3','Output':'4','Tie Type':'Video'})
-        print('Button Pressed - REC: %s' % 'PTZ')
-    elif button is Btn4Share and state == 'Pressed':
-        ## ShareLink to SMP351 Input - Video
-        Matrix.Set('MatrixTieCommand', None, {'Input':'4','Output':'4','Tie Type':'Video'})
-        print('Button Pressed - REC: %s' % 'ShareLink')
-    elif button is Btn4Cisco1 and state == 'Pressed':
-        ## Cisco Out 1 to SMP351 Input - Video
-        Matrix.Set('MatrixTieCommand', None, {'Input':'5','Output':'4','Tie Type':'Video'})
-        print('Button Pressed - REC: %s' % 'Cisco 1')
-    elif button is Btn4Cisco2 and state == 'Pressed':
-        ## Cisco Out 2 to SMP351 Input - Video
-        Matrix.Set('MatrixTieCommand', None, {'Input':'6','Output':'4','Tie Type':'Video'})
-        print('Button Pressed - REC: %s' % 'Cisco 2')
-    pass
-
-@event(PageRecA, ButtonEventList)
-def RecEventsA(button, state):
-    ## Enable / Disable - Mic Audio Recording
-    if button is Btn4Mic and state == 'Pressed':
-        print('Button Pressed - REC: %s' % 'Mics')
-    ## Enable / Disable - VC Audio Recording
-    elif button is Btn4VC and state == 'Pressed':
-        print('Button Pressed - REC: %s' % 'VC')
-    ## Enable / Disable - VoIP Audio Recording
-    elif button is Btn4VoIP and state == 'Pressed':
-        print('Button Pressed - REC: %s' % 'VoIP')
-    ## Enable / Disable - PC Audio Recording
-    elif button is Btn4PC and state == 'Pressed': 
-        print('Button Pressed - REC: %s' % 'PC')
-    pass
-
-@event(PageRecNav, ButtonEventList)
-def RecEventsNav(button, state):
-    if button is BtnPause and state == 'Pressed':
-        ## Pause the Recording
-        Recorder.Set('Record','Pause')
-        print('Button Pressed - REC: %s' % 'Pause')
-    elif button is BtnREC and state == 'Pressed':
-        ## Start to Record
-        Recorder.Set('Record','Start')
-        print('Button Pressed - REC: %s' % 'Rec')
-    elif button is BtnStop and state == 'Pressed':
-        ## Stop the Recording
-        Recorder.Set('Record','Stop')
-        print('Button Pressed - REC: %s' % 'Stop')
-    pass
-
 ## Page VoIP -------------------------------------------------------------------
 @event(PageTelCall, ButtonEventList)
 def VICallEvents(button, state):
@@ -1204,11 +1074,36 @@ def AudioMuteEvents(button, state):
 
 ## Page PowerOff ---------------------------------------------------------------
 @event(BtnPowerAll, ButtonEventList)
-def PowerEvents(button, state):
+def PowerEvents(button, state):   
+    global PwrCount
+    ## If the user press the Power Button:
+    ## Only Turn On the first state of button - Does not do any action
     if state == 'Pressed':
+        BtnPowerAll.SetState(1)
         print('Button Pressed: %s' % 'PowerAll')
-    elif state == 'Held':
-        print('Button Held: %s' % 'PowerAll')
+    ## If the user holds down the button:
+    ## A variable is incremented up to 4 seconds
+    ## In each new value, Turn On each visual state of the Power Button
+    ## Whne the value is equal to 4, ShutDown all devices in the System
+    elif state == 'Repeated':
+        PwrCount = PwrCount + 1
+        BtnPowerAll.SetState(PwrCount)
+        LblCountAll.SetText(str(PwrCount))
+        print('Button Repeated: %s' % 'PowerAll')
+        ## Shutdown routine
+        if PwrCount == 4:
+            #LCD1.Set('Power','Off')
+            #LCD2.Set('Power','Off')
+            Cisco.Set('Standby','Activate')
+            #Somfy.Set('Tilt','Up',{'Channel':'1','Amplitude':1})
+            TLP.ShowPage('Index')
+    ## If the user release the Button:
+    ## Clean the counter power data in GUI and delete the visual feedback
+    elif state == 'Released':
+        PwrCount = 0
+        BtnPowerAll.SetState(0)
+        LblCountAll.SetText('')
+        print('Button Released: %s' % 'PowerAll')
     pass
 
 ## End Events Definitions-------------------------------------------------------
