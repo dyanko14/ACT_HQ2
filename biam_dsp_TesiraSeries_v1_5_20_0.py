@@ -32,6 +32,7 @@ class DeviceClass:
             'DoNotDisturb': {'Parameters': ['Instance Tag', 'Line'], 'Status': {}},
             'DTMF': {'Parameters': ['Instance Tag', 'Line'], 'Status': {}},
             'FineLevelControl': {'Parameters': ['Instance Tag', 'Channel'], 'Status': {}},
+            'GraphicEqualizerBandGain': {'Parameters': ['Instance Tag', 'Band'], 'Status': {}},
             'InputLevel': {'Parameters': ['Instance Tag', 'Channel'], 'Status': {}},
             'InputMute': {'Parameters': ['Instance Tag', 'Channel'], 'Status': {}},
             'VerboseMode': {'Status': {}},
@@ -465,6 +466,36 @@ class DeviceClass:
             self.WriteStatus('FineLevelControl', float(value), {'Instance Tag': tag, 'Channel': str(chnl)})
             chnl += 1
 
+    def SetGraphicEqualizerBandGain(self, value, qualifier):
+        tag = qualifier['Instance Tag']
+        band = qualifier['Band']
+        if ' ' in tag:
+            tag = '\"' + tag + '\"'
+
+        if '/' not in tag and '&' not in tag and 1 <= int(band) <= 31 and -30 <= value <= 15:
+            cmdString = '{0} set gain {1} {2}\n'.format(tag, band, value)
+            self.__SetHelper('GraphicEqualizerBandGain', cmdString, value, qualifier)
+        else:
+            print('Invalid Command for SetGraphicEqualizerBandGain')
+
+    def UpdateGraphicEqualizerBandGain(self, value, qualifier):
+        tag = qualifier['Instance Tag']
+        band = qualifier['Band']
+        if ' ' in tag:
+            tag = '\"' + tag + '\"'
+
+        if '/' not in tag and '&' not in tag and 1 <= int(band) <= 31:
+            res = self.__UpdateHelper('GraphicEqualizerBandGain', '{0} get gain {1}\n'.format(tag, band), value, qualifier)
+            if res:
+                result = findall('(-?\d+\.\d+)', res)
+                if result:
+                    value = round(float(result[0]), 1)
+                    self.WriteStatus('GraphicEqualizerBandGain', value, qualifier)
+                else:
+                    print('Invalid/unexpected response for UpdateGraphicEqualizerBandGain')
+        else:
+            print('Invalid Command for UpdateGraphicEqualizerBandGain')
+
     def SetInputLevel(self, value, qualifier):
 
         tag = qualifier['Instance Tag']
@@ -537,7 +568,10 @@ class DeviceClass:
 
         res = self.__UpdateHelper('VerboseMode', 'SESSION get verbose\r', value, qualifier)
         if res:
-            if 'false' in res:
+            if 'true' in res:
+                self.WriteStatus('VerboseMode', 'True', qualifier)
+            elif 'false' in res:
+                self.WriteStatus('VerboseMode', 'False', qualifier)
                 self.Send('SESSION set verbose true\r')
         else:
             print('Invalid/unexpected response for UpdateVerboseMode')
@@ -1705,18 +1739,18 @@ class DeviceClass:
         self.Send(commandstring)
 
     def __UpdateHelper(self, command, commandstring, value, qualifier):
-        if self.initializationChk:
-            self.OnConnected()
-            self.initializationChk = False
-
-        self.counter = self.counter + 1
-        if self.counter > self.connectionCounter and self.connectionFlag:
-            self.OnDisconnected()
-
         if self.Unidirectional == 'True':
             print('Inappropriate Command ', command)
             return ''
         else:
+            if self.initializationChk:
+                self.OnConnected()
+                self.initializationChk = False
+
+            self.counter = self.counter + 1
+            if self.counter > self.connectionCounter and self.connectionFlag:
+                self.OnDisconnected()
+
             if self.verboseDisable:
                 self.Send('SESSION set verbose true\r')
             elif self.Authenticated == 'True' or (self.ConnectionType == 'Serial' and self.Authenticated not in ['Failed', 'Awaiting']):
