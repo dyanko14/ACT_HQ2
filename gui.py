@@ -1,9 +1,9 @@
-## -------------------------------------------------------------------------- ##
-## Business   | Asesores y Consultores en Tecnología S.A. de C.V. ----------- ##
-## Programmer | Dyanko Cisneros Mendoza
-## Customer   | Human Quality
-## Project    | Meeting Room
-## Version    | 0.1 --------------------------------------------------------- ##
+""" --------------------------------------------------------------------------
+ Business   | Asesores y Consultores en Tecnología S.A. de C.V.
+ Programmer | Dyanko Cisneros Mendoza
+ Customer   | Human Quality
+ Project    | Meeting Room
+ Version    | 0.1 --------------------------------------------------------- """
 
 ## CONTROL SCRIPT IMPORT -------------------------------------------------------
 from extronlib.device import UIDevice
@@ -14,9 +14,9 @@ from extronlib.system import MESet
 TLP = UIDevice('TouchPanel')
 
 # UI Buttons
-Btn = {
+BTN = {
     ## Index
-    'Index'   : Button(TLP, 1),
+    'Index'     : Button(TLP, 1),
     ## Main
     'Video'     : Button(TLP, 2),
     'VC'        : Button(TLP, 3),
@@ -68,7 +68,7 @@ Btn = {
     'Dial9'     : Button(TLP, 109),
     'DialA'     : Button(TLP, 110),
     'DialG'     : Button(TLP, 111),
-    'Delete'    : Button(TLP, 115, repeatTime = 0.1),
+    'Delete'    : Button(TLP, 115, repeatTime=0.1),
     ## VoIP Options
     'Redial'    : Button(TLP, 112),
     'DTMF'      : Button(TLP, 113),
@@ -89,7 +89,7 @@ Btn = {
     'VCDial9'   : Button(TLP, 149),
     'VCDialA'   : Button(TLP, 150),
     'VCDialG'   : Button(TLP, 151),
-    'VCDelete'  : Button(TLP, 155, repeatTime = 0.1),
+    'VCDelete'  : Button(TLP, 155, repeatTime=0.1),
     ## VC Options
     'VCEnviar'  : Button(TLP, 152),
     'VCCamara'  : Button(TLP, 153),
@@ -112,13 +112,13 @@ Btn = {
     'VCRecall'  : Button(TLP, 166),
     'VCSave'    : Button(TLP, 167),
     ## VC Camera Zoom
-    'VCZoom1'   : Button(TLP, 168, repeatTime = 0.1),
-    'VCZoom2'   : Button(TLP, 169, repeatTime = 0.1),
+    'VCZoom1'   : Button(TLP, 168, repeatTime=0.1),
+    'VCZoom2'   : Button(TLP, 169, repeatTime=0.1),
     ## VC Camera Movement
-    'VCUp'      : Button(TLP, 170, repeatTime = 0.1),
-    'VCLeft'    : Button(TLP, 171, repeatTime = 0.1),
-    'VCDown'    : Button(TLP, 172, repeatTime = 0.1),
-    'VCRight'   : Button(TLP, 173, repeatTime = 0.1),
+    'VCUp'      : Button(TLP, 170, repeatTime=0.1),
+    'VCLeft'    : Button(TLP, 171, repeatTime=0.1),
+    'VCDown'    : Button(TLP, 172, repeatTime=0.1),
+    'VCRight'   : Button(TLP, 173, repeatTime=0.1),
     ## VC Camera Selection
     'VCLocal'   : Button(TLP, 174),
     'VCRemote'  : Button(TLP, 175),
@@ -127,116 +127,124 @@ Btn = {
     'XVGA'      : Button(TLP, 189),
     'XShare'    : Button(TLP, 190),
     ## Audio Gain
-    'XSpkLess'  : Button(TLP, 191, repeatTime = 0.1),
-    'XSpkPlus'  : Button(TLP, 192, repeatTime = 0.1),
-    'XVCLess'   : Button(TLP, 193, repeatTime = 0.1),
-    'XVCPlus'   : Button(TLP, 194, repeatTime = 0.1),
+    'XSpkLess'  : Button(TLP, 191, repeatTime=0.1),
+    'XSpkPlus'  : Button(TLP, 192, repeatTime=0.1),
+    'XVCLess'   : Button(TLP, 193, repeatTime=0.1),
+    'XVCPlus'   : Button(TLP, 194, repeatTime=0.1),
 
     ## Audio Mute
     'XSpk'      : Button(TLP, 197),
     'XVC'       : Button(TLP, 198),
     'XMics'     : Button(TLP, 199),
     ## Status
-    '232LCD1'   : Button(TLP, 211),
-    '232LCD2'   : Button(TLP, 212),
-    'LANMatrix' : Button(TLP, 213),
+    'LANMatrix' : Button(TLP, 211),
+    'LanBridge' : Button(TLP, 212),
+    'LANCisco'  : Button(TLP, 213),
     'LANBiamp'  : Button(TLP, 214),
-    '232PTZ'    : Button(TLP, 215),
-    '232Cisco'  : Button(TLP, 216),
-    'LANRec'    : Button(TLP, 217),
-    'LanVaddio' : Button(TLP, 221),
-
+    'LANLutron' : Button(TLP, 215),
+    '232Somfy'  : Button(TLP, 216),
     ## Power
-    'PowerAll'  : Button(TLP, 250, repeatTime = 1),
+    'PowerAll'  : Button(TLP, 250, repeatTime=1),
 }
 
 # UI Page Buttons
-Btn_Page = {
-    'Main'   : [Btn['Video'], Btn['VC'], Btn['Webex'], Btn['Rec'],
-                Btn['VoIP'], Btn['Audio'], Btn['Status'], Btn['PwrOff']],
-    
-    'Video'  : [Btn['DisplayL'], Btn['DisplayR']],
+BTNPAGE = {
+    'Main'   : [BTN['Video'], BTN['VC'], BTN['Webex'], BTN['Rec'],
+                BTN['VoIP'], BTN['Audio'], BTN['Status'], BTN['PwrOff']],
 
-    'LCD1'   : [Btn['LHDMI'], Btn['LVGA'], Btn['LPTZ'], Btn['LShare'],
-                Btn['LPwrOn'], Btn['LPwrOff'], Btn['LBack']],
-    
-    'LCD2'   : [Btn['RHDMI'], Btn['RVGA'], Btn['RPTZ'], Btn['RShare'],
-                Btn['RPwrOn'], Btn['RPwrOff'], Btn['RBack']],
+    'Video'  : [BTN['DisplayL'], BTN['DisplayR']],
 
-    'VCCall' : [Btn['VCCall'], Btn['VCHangup']],
+    'LCD1'   : [BTN['LHDMI'], BTN['LVGA'], BTN['LPTZ'], BTN['LShare'],
+                BTN['LPwrOn'], BTN['LPwrOff'], BTN['LBack']],
 
-    'VCDial' : [Btn['VCDial0'], Btn['VCDial1'], Btn['VCDial2'], Btn['VCDial3'],
-                Btn['VCDial4'], Btn['VCDial5'], Btn['VCDial6'], Btn['VCDial7'],
-                Btn['VCDial8'], Btn['VCDial9'], Btn['VCDialA'], Btn['VCDialG'],
-                Btn['VCDelete']],
+    'LCD1_S' : [BTN['LHDMI'], BTN['LVGA'], BTN['LPTZ'], BTN['LShare']],
 
-    'VCOpt'  : [Btn['VCEnviar'], Btn['VCCamara'], Btn['VCAutoAn']],
+    'LCD2'   : [BTN['RHDMI'], BTN['RVGA'], BTN['RPTZ'], BTN['RShare'],
+                BTN['RPwrOn'], BTN['RPwrOff'], BTN['RBack']],
 
-    'VCPC'   : [Btn['VCHDMI'], Btn['VCVGA'], Btn['VCPTZ'], Btn['VCShare'],
-                Btn['VCBack2'], Btn['VCSend'], Btn['VCStop']],
+    'LCD2_S' : [BTN['RHDMI'], BTN['RVGA'], BTN['RPTZ'], BTN['RShare']],
 
-    'VCCam'  : [Btn['VCUp'], Btn['VCLeft'], Btn['VCDown'], Btn['VCRight'],
-                Btn['VCZoom1'], Btn['VCZoom2'], Btn['VCLocal'], Btn['VCRemote']],
+    'VCCall' : [BTN['VCCall'], BTN['VCHangup']],
 
-    'VCPre'  : [Btn['VCP1'], Btn['VCP2'], Btn['VCP3'], Btn['VCP4'],
-                Btn['VCP5'], Btn['VCRecall'], Btn['VCSave']],
+    'VCDial' : [BTN['VCDial0'], BTN['VCDial1'], BTN['VCDial2'], BTN['VCDial3'],
+                BTN['VCDial4'], BTN['VCDial5'], BTN['VCDial6'], BTN['VCDial7'],
+                BTN['VCDial8'], BTN['VCDial9'], BTN['VCDialA'], BTN['VCDialG'],
+                BTN['VCDelete']],
 
-    'Webex'  : [Btn['WHDMI'], Btn['WVGA'], Btn['WPTZ'], Btn['WShare'],
-                Btn['WCisco1'], Btn['WCisco2']],
-    
-    'TelCall': [Btn['Call'], Btn['Hangup']],
+    'VCOpt'  : [BTN['VCEnviar'], BTN['VCCamara'], BTN['VCAutoAn']],
 
-    'TelDial': [Btn['Dial0'], Btn['Dial1'], Btn['Dial2'], Btn['Dial3'],
-                Btn['Dial4'], Btn['Dial5'], Btn['Dial6'], Btn['Dial7'],
-                Btn['Dial8'], Btn['Dial9'], Btn['DialA'], Btn['DialG'],
-                Btn['Delete']],
+    'VCPC'   : [BTN['VCHDMI'], BTN['VCVGA'], BTN['VCPTZ'], BTN['VCShare'],
+                BTN['VCBack2'], BTN['VCSend'], BTN['VCStop']],
 
-    'TelOpt' : [Btn['Redial'], Btn['DTMF'], Btn['Hold']],
-    
-    'Audio1' : [Btn['XHDMI'], Btn['XVGA'], Btn['XShare']],
+    'VCPC_S' : [BTN['VCHDMI'], BTN['VCVGA'], BTN['VCPTZ'], BTN['VCShare']],
 
-    'Audio2' : [Btn['XSpkLess'], Btn['XSpkPlus'], Btn['XVCLess'], Btn['XVCPlus']],
+    'VCCam'  : [BTN['VCUp'], BTN['VCLeft'], BTN['VCDown'], BTN['VCRight'],
+                BTN['VCZoom1'], BTN['VCZoom2'], BTN['VCLocal'], BTN['VCRemote']],
 
-    'Audio3' : [Btn['XSpk'], Btn['XVC'], Btn['XMics']],
+    'VCPre'  : [BTN['VCP1'], BTN['VCP2'], BTN['VCP3'], BTN['VCP4'],
+                BTN['VCP5'], BTN['VCRecall'], BTN['VCSave']],
+
+    'Webex'  : [BTN['WHDMI'], BTN['WVGA'], BTN['WPTZ'], BTN['WShare'],
+                BTN['WCisco1'], BTN['WCisco2']],
+
+    'TelCall': [BTN['Call'], BTN['Hangup']],
+
+    'TelDial': [BTN['Dial0'], BTN['Dial1'], BTN['Dial2'], BTN['Dial3'],
+                BTN['Dial4'], BTN['Dial5'], BTN['Dial6'], BTN['Dial7'],
+                BTN['Dial8'], BTN['Dial9'], BTN['DialA'], BTN['DialG'],
+                BTN['Delete']],
+
+    'TelOpt' : [BTN['Redial'], BTN['DTMF'], BTN['Hold']],
+
+    'Audio1' : [BTN['XHDMI'], BTN['XVGA'], BTN['XShare']],
+
+    'Audio2' : [BTN['XSpkLess'], BTN['XSpkPlus'], BTN['XVCLess'], BTN['XVCPlus']],
+
+    'Audio3' : [BTN['XSpk'], BTN['XVC'], BTN['XMics']],
 }
 
 # UI Group Page Buttons
-Btn_Group = {
-    'Main' : MESet(Btn_Page['Main']),
-    
-    'VCCam': MESet([Btn['VCLocal'], Btn['VCRemote']]),
+BTNGROUP = {
+    'Main' : MESet(BTNPAGE['Main']),
 
-    'VCPTZ': MESet([Btn['VCRecall'], Btn['VCSave']]),
+    'VCCam' : MESet([BTN['VCLocal'], BTN['VCRemote']]),
+
+    'VCPTZ' : MESet([BTN['VCRecall'], BTN['VCSave']]),
+
+    'LCD1_S' : MESet(BTNPAGE['LCD1_S']),
+
+    'LCD2_S' : MESet(BTNPAGE['LCD2_S']),
+
+    'VCPC_S' : MESet(BTNPAGE['VCPC_S']),
+
+    'Webex' : MESet(BTNPAGE['Webex']),
+
+    'Audio' : MESet(BTNPAGE['Audio1']),
 }
 
 # UI Button states
-Btn_State = {
+BTNSTATE = {
     'List' : ['Pressed', 'Released', 'Held', 'Repeated', 'Tapped'],
 }
 
 # UI Labels
-Lbl = {
+LBL = {
     'Master'  : Label(TLP, 300),
     'Dial'    : Label(TLP, 116),
     'VCDial'  : Label(TLP, 156),
-    'Rec1'    : Label(TLP, 218),
-    'Rec2'    : Label(TLP, 219),
-    'Rec3'    : Label(TLP, 220),
-    'Vaddio1' : Label(TLP, 222),
-    'Vaddio2' : Label(TLP, 223),
-    'Vaddio3' : Label(TLP, 224),
     'PwrAll'  : Label(TLP, 251),
     'CountAll': Label(TLP, 252),
 }
 
 # UI Levels
-Lvl = {
+LVL = {
     'Spk' : Level(TLP, 195),
     'VC'  : Level(TLP, 196),
 }
+LVL['Spk'].SetRange(-100, 12, 1)
 
-# UI Popups
-Popup = {
+# UI Device Popups
+POPUP = {
     'Video'  : 'Video',
     'LCD1'   : 'Display_L',
     'LCD2'   : 'Display_R',
@@ -251,8 +259,8 @@ Popup = {
     'Hi'     : 'x_Welcome',
 }
 
-# UI Pages
-Page = {
+# UI Device Pages
+PAGE = {
     'Index' : 'Index',
-    'Main'  : 'Main'
+    'Main'  : 'Main',
 }
