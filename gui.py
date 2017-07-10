@@ -21,8 +21,8 @@ BTN = {
     'Video'     : Button(TLP, 2),
     'VC'        : Button(TLP, 3),
     'Webex'     : Button(TLP, 4),
-    'Rec'       : Button(TLP, 5),
-    'VoIP'      : Button(TLP, 6),
+    'VoIP'      : Button(TLP, 5),
+    'Lights'    : Button(TLP, 6),
     'Audio'     : Button(TLP, 7),
     'Status'    : Button(TLP, 8),
     'PwrOff'    : Button(TLP, 9),
@@ -52,6 +52,14 @@ BTN = {
     'WShare'    : Button(TLP, 64),
     'WCisco1'   : Button(TLP, 65),
     'WCisco2'   : Button(TLP, 66),
+    ## Lights & Blinds
+    'Escene1'   : Button(TLP, 71),
+    'Escene2'   : Button(TLP, 72),
+    'Escene3'   : Button(TLP, 73),
+    'Escene4'   : Button(TLP, 74),
+    'BlindsUp'  : Button(TLP, 75, repeatTime=0.1),
+    'BlindsSt'  : Button(TLP, 76),
+    'BlindsDw'  : Button(TLP, 77, repeatTime=0.1),
     ## VoIP Dial
     'Call'      : Button(TLP, 91),
     'Hangup'    : Button(TLP, 92),
@@ -143,13 +151,20 @@ BTN = {
     'LANBiamp'  : Button(TLP, 214),
     'LANLutron' : Button(TLP, 215),
     '232Somfy'  : Button(TLP, 216),
+    ## Signal Led
+    'Signal1'   : Button(TLP, 221),
+    'Signal2'   : Button(TLP, 222),
+    'Signal3'   : Button(TLP, 223),
+    'Signal4'   : Button(TLP, 224),
+    'Signal5'   : Button(TLP, 225),
+    'Signal6'   : Button(TLP, 226),
     ## Power
     'PowerAll'  : Button(TLP, 250, repeatTime=1),
 }
 
 # UI Page Buttons
 BTNPAGE = {
-    'Main'   : [BTN['Video'], BTN['VC'], BTN['Webex'], BTN['Rec'],
+    'Main'   : [BTN['Video'], BTN['VC'], BTN['Webex'], BTN['Lights'],
                 BTN['VoIP'], BTN['Audio'], BTN['Status'], BTN['PwrOff']],
 
     'Video'  : [BTN['DisplayL'], BTN['DisplayR']],
@@ -196,6 +211,10 @@ BTNPAGE = {
 
     'TelOpt' : [BTN['Redial'], BTN['DTMF'], BTN['Hold']],
 
+    'Lights' : [BTN['Escene1'], BTN['Escene2'], BTN['Escene3'], BTN['Escene4']],
+
+    'Blinds' : [BTN['BlindsUp'], BTN['BlindsSt'], BTN['BlindsDw']],
+
     'Audio1' : [BTN['XHDMI'], BTN['XVGA'], BTN['XShare']],
 
     'Audio2' : [BTN['XSpkLess'], BTN['XSpkPlus'], BTN['XVCLess'], BTN['XVCPlus']],
@@ -218,6 +237,10 @@ BTNGROUP = {
     'VCPC_S' : MESet(BTNPAGE['VCPC_S']),
 
     'Webex' : MESet(BTNPAGE['Webex']),
+
+    'Lights': MESet(BTNPAGE['Lights']),
+
+    'Blinds': MESet(BTNPAGE['Blinds']),
 
     'Audio' : MESet(BTNPAGE['Audio1']),
 }
@@ -253,6 +276,7 @@ POPUP = {
     'VC_Cam' : 'VC_Cam',
     'Webex'  : 'Webex',
     'VoIP'   : 'VoIP',
+    'Lights' : 'Lights',
     'Audio'  : 'Audio',
     'Status' : 'Status',
     'Power'  : 'x_PowerOff',

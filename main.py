@@ -102,6 +102,12 @@ def subscribe_matrix():
     MATRIX.SubscribeStatus('OutputTieStatus', {'Output':'3', 'Tie Type':'Video'}, matrix_parsing)
     MATRIX.SubscribeStatus('OutputTieStatus', {'Output':'4', 'Tie Type':'Video'}, matrix_parsing)
     MATRIX.SubscribeStatus('OutputTieStatus', {'Output':'1', 'Tie Type':'Audio'}, matrix_parsing)
+    MATRIX.SubscribeStatus('SignalStatus', {'Input' : '1'}, matrix_parsing)
+    MATRIX.SubscribeStatus('SignalStatus', {'Input' : '2'}, matrix_parsing)
+    MATRIX.SubscribeStatus('SignalStatus', {'Input' : '3'}, matrix_parsing)
+    MATRIX.SubscribeStatus('SignalStatus', {'Input' : '4'}, matrix_parsing)
+    MATRIX.SubscribeStatus('SignalStatus', {'Input' : '5'}, matrix_parsing)
+    MATRIX.SubscribeStatus('SignalStatus', {'Input' : '6'}, matrix_parsing)
     pass
 
 def subscribe_bridge():
@@ -151,6 +157,12 @@ def update_matrix():
     MATRIX.Update('OutputTieStatus', {'Output':'3', 'Tie Type':'Video'})
     MATRIX.Update('OutputTieStatus', {'Output':'4', 'Tie Type':'Video'})
     MATRIX.Update('OutputTieStatus', {'Output':'1', 'Tie Type':'Audio'})
+    MATRIX.Update('SignalStatus', {'Input' : '1'})
+    MATRIX.Update('SignalStatus', {'Input' : '2'})
+    MATRIX.Update('SignalStatus', {'Input' : '3'})
+    MATRIX.Update('SignalStatus', {'Input' : '4'})
+    MATRIX.Update('SignalStatus', {'Input' : '5'})
+    MATRIX.Update('SignalStatus', {'Input' : '6'})
     pass
 
 def update_bridge():
@@ -260,6 +272,38 @@ def matrix_parsing(command, value, qualifier):
                     BTNGROUP['Audio'].SetCurrent(BTN['XVGA'])
                 elif value == '4':
                     BTNGROUP['Audio'].SetCurrent(BTN['XShare'])
+
+    elif command == 'SignalStatus':
+        if qualifier['Input'] == '1':
+            if value == 'Signal Detected':
+                BTN['Signal1'].SetState(1)
+            else:
+                BTN['Signal1'].SetState(0)
+        elif qualifier['Input'] == '2':
+            if value == 'Signal Detected':
+                BTN['Signal2'].SetState(1)
+            else:
+                BTN['Signal2'].SetState(0)
+        elif qualifier['Input'] == '3':
+            if value == 'Signal Detected':
+                BTN['Signal3'].SetState(1)
+            else:
+                BTN['Signal3'].SetState(0)
+        elif qualifier['Input'] == '4':
+            if value == 'Signal Detected':
+                BTN['Signal4'].SetState(1)
+            else:
+                BTN['Signal4'].SetState(0)
+        elif qualifier['Input'] == '5':
+            if value == 'Signal Detected':
+                BTN['Signal5'].SetState(1)
+            else:
+                BTN['Signal5'].SetState(0)
+        elif qualifier['Input'] == '6':
+            if value == 'Signal Detected':
+                BTN['Signal6'].SetState(1)
+            else:
+                BTN['Signal6'].SetState(0)
     pass
 
 def bridge_parsing(command, value, qualifier):
@@ -562,7 +606,7 @@ loop_trying_lutron = Wait(5, trying_lutron)
 
 def update_loop_matrix():
     """Continuos Update Commands to produce Module Connected / Disconnected"""
-    MATRIX.Update('InputGain',{'Input':'1'})
+    MATRIX.Update('SignalStatus', {'Input':'1'})
     loop_update_matrix.Restart()
 loop_update_matrix = Wait(12, update_loop_matrix)
 
@@ -596,10 +640,6 @@ loop_update_lutron = Wait(12, update_loop_lutron)
 MATRIX_DATA = {
     'ConexModule': None,
     'ConexEvent' : None,
-    ##
-    'Input'      : '',
-    'Output'     : '',
-    'Type'       : '',
 }
 
 BRIDGE_DATA = {
@@ -691,14 +731,15 @@ def main_events(button, state):
         LBL['Master'].SetText('Control de Webconferencia')
         print('Touch Mode: %s' % 'Webex')
 
-    elif button is BTN['Rec'] and state == 'Pressed':
-        LBL['Master'].SetText('Control de Grabación')
-        print('Touch Mode: %s' % 'Recording')
-
     elif button is BTN['VoIP'] and state == 'Pressed':
         TLP.ShowPopup(POPUP['VoIP'])
         LBL['Master'].SetText('Telefonía IP')
         print('Touch Mode: %s' % 'VoIP')
+
+    elif button is BTN['Lights'] and state == 'Pressed':
+        TLP.ShowPopup(POPUP['Lights'])
+        LBL['Master'].SetText('Control de Iluminación')
+        print('Touch Mode: %s' % 'Lights')
 
     elif button is BTN['Audio'] and state == 'Pressed':
         ## Query Data from Biamp
@@ -1380,6 +1421,62 @@ def audio_mute_events(button, state):
         print('Button Pressed - Audio: %s' % 'Mute Mics')
     pass
 
+## Lights PAGE -----------------------------------------------------------------
+@event(BTNPAGE['Lights'], BTNSTATE['List'])
+def lights_events(button, state):
+    """User Actions: Touch Lights Page"""
+
+    if button is BTN['Escene1'] and state == 'Pressed':
+        ## All Lights Off
+        LUTRON.Set('4ButtonPicoControls', 'Press', {'Integration ID':'2', 'Button':'4'})
+        print('Button Pressed - Lights: %s' % 'Escene 1')
+
+    elif button is BTN['Escene2'] and state == 'Pressed':
+        ## Black soft Lights
+        LUTRON.Set('4ButtonPicoControls', 'Press', {'Integration ID':'2', 'Button':'3/Lower'})
+        print('Button Pressed - Lights: %s' % 'Escene 2')
+
+    elif button is BTN['Escene3'] and state == 'Pressed':
+        ## White soft Lights
+        LUTRON.Set('4ButtonPicoControls', 'Press', {'Integration ID':'2', 'Button':'2/Raise'})
+        print('Button Pressed - Lights: %s' % 'Escene 3')
+
+    elif button is BTN['Escene4'] and state == 'Pressed':
+        ## All Lights On
+        LUTRON.Set('4ButtonPicoControls', 'Press', {'Integration ID':'2', 'Button':'1'})
+        print('Button Pressed - Lights: %s' % 'Escene 4')
+
+    ## Mutually Exclusive
+    BTNGROUP['Lights'].SetCurrent(button)
+    pass
+
+## Blinds PAGE -----------------------------------------------------------------
+@event(BTNPAGE['Blinds'], BTNSTATE['List'])
+def lights_events(button, state):
+    """User Actions: Touch Blinds Page"""
+
+    if button is BTN['BlindsUp'] and state == 'Pressed' or state == 'Repeated':
+        ## Blinds Up
+        #SOMFY.Set('Tilt', 'Up', {'Channel':'1', 'Amplitude':1})
+        BTNGROUP['Blinds'].SetCurrent(button)
+        print('Button Pressed - Lights: %s' % 'Blinds Up')
+
+    elif button is BTN['BlindsSt'] and state == 'Pressed':
+        ## Blinds Stop
+        #SOMFY.Set('Position', 'Stop', {'Channel':'1'})
+        BTNGROUP['Blinds'].SetCurrent(button)
+        print('Button Pressed - Lights: %s' % 'Blinds Stop')
+
+    elif button is BTN['BlindsDw'] and state == 'Pressed' or state == 'Repeated':
+        ## Blinds Down
+        #SOMFY.Set('Tilt', 'Down', {'Channel':'1', 'Amplitude':1})
+        BTNGROUP['Blinds'].SetCurrent(button)
+        print('Button Pressed - Lights: %s' % 'Blinds Down')
+    
+    ## Mutually Exclusive
+    BTNGROUP['Blinds'].SetCurrent(button)
+    pass
+
 ## Status PAGE -----------------------------------------------------------------
 
 ## Power PAGE ------------------------------------------------------------------
@@ -1391,7 +1488,7 @@ def power_events(button, state):
     ## If the user press the Power Button:
     ## Only Turn On the first state of button - Does not do any action
     if state == 'Pressed':
-        BTN['PowerAll'].SetState(1)
+        BTN['PowerAll'].SetState(4)
         print('Button Pressed: %s' % 'PowerAll')
 
     ## If the user holds down the button:
